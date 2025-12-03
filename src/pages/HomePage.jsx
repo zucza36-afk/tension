@@ -17,13 +17,24 @@ const HomePage = () => {
   const t = (key) => getTranslation(key, language)
 
   const handleCreateGame = async () => {
+    console.log('Creating game...')
     try {
-      const { sessionCode } = await createSession()
-      toast.success(`${t('gameCreated')} ${sessionCode}`)
-      navigate('/setup')
+      const result = await createSession()
+      console.log('Session created:', result)
+      
+      if (result && result.sessionCode) {
+        toast.success(`${t('gameCreated') || 'Gra utworzona'} ${result.sessionCode}`)
+        // Small delay to ensure state is updated
+        setTimeout(() => {
+          navigate('/setup')
+        }, 100)
+      } else {
+        console.error('No sessionCode returned:', result)
+        toast.error(t('errorCreatingGame') || 'Błąd tworzenia gry')
+      }
     } catch (error) {
       console.error('Error creating game:', error)
-      toast.error(t('errorCreatingGame') || 'Błąd tworzenia gry')
+      toast.error(t('errorCreatingGame') || 'Błąd tworzenia gry: ' + error.message)
     }
   }
 
@@ -85,10 +96,11 @@ const HomePage = () => {
       >
         <button
           onClick={handleCreateGame}
-          className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-3"
+          type="button"
+          className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Play className="w-6 h-6" />
-          <span>{t('createGame')}</span>
+          <span>{t('createGame') || 'Utwórz grę'}</span>
         </button>
 
         <button

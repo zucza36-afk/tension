@@ -235,12 +235,12 @@ const useGameStore = create((set, get) => ({
 
   // Session management
   createSession: async () => {
+    const sessionCode = Math.random().toString(36).substring(2, 8).toUpperCase()
+    const sessionId = Date.now().toString()
+    const localPlayerId = `player_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
+    
     try {
-      const sessionCode = Math.random().toString(36).substring(2, 8).toUpperCase()
-      const sessionId = Date.now().toString()
-      const localPlayerId = `player_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
-      
-      // Create session in Firebase
+      // Try to create session in Firebase
       await sessionService.createSession({
         sessionId,
         sessionCode,
@@ -274,11 +274,14 @@ const useGameStore = create((set, get) => ({
       
       return { sessionId, sessionCode }
     } catch (error) {
-      console.error('Error creating session:', error)
-      // Fallback to local session
-      const sessionCode = Math.random().toString(36).substring(2, 8).toUpperCase()
-      const sessionId = Date.now().toString()
-      set({ sessionId, sessionCode, isOnlineSession: false })
+      console.warn('Firebase session creation failed, using local session:', error.message)
+      // Fallback to local session - always works
+      set({ 
+        sessionId, 
+        sessionCode, 
+        isOnlineSession: false,
+        localPlayerId: null
+      })
       return { sessionId, sessionCode }
     }
   },

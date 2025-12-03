@@ -26,7 +26,9 @@ import { db, realtimeDb, isFirebaseConfigured } from './config'
 // Session management
 export const createSession = async (sessionData) => {
   if (!isFirebaseConfigured() || !db) {
-    throw new Error('Firebase nie jest skonfigurowane')
+    const error = new Error('Firebase nie jest skonfigurowane')
+    error.code = 'FIREBASE_NOT_CONFIGURED'
+    throw error
   }
   
   try {
@@ -38,7 +40,9 @@ export const createSession = async (sessionData) => {
     })
     return sessionData.sessionId
   } catch (error) {
-    console.error('Error creating session:', error)
+    console.error('Error creating session in Firebase:', error)
+    // Re-throw with more context
+    error.code = error.code || 'FIREBASE_ERROR'
     throw error
   }
 }
