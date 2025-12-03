@@ -12,6 +12,13 @@ const useGameStore = create((set, get) => ({
   // Players
   players: [],
   currentPlayerIndex: 0,
+  playerScores: {}, // { playerId: score }
+  
+  // Answer system
+  gamePhase: 'draw', // 'draw', 'answer', 'guess', 'result'
+  currentAnswer: null, // { playerId, answer, cardId }
+  currentGuess: null, // { playerId, guess }
+  waitingForAnswer: false,
   
   // Cards
   deck: [],
@@ -181,11 +188,18 @@ const useGameStore = create((set, get) => ({
       }
     }
     
+    // Set game phase based on card type
+    let newPhase = 'draw'
+    if (card.type === 'Truth' || card.type === 'Dare') {
+      newPhase = 'answer'
+    }
+    
     set({
       deck: remainingDeck,
       currentCard: card,
       usedCards: [...usedCards, card],
-      currentRound: currentRound + 1
+      currentRound: currentRound + 1,
+      gamePhase: newPhase
     })
     
     // Sync to Firebase if online
@@ -214,10 +228,22 @@ const useGameStore = create((set, get) => ({
     }
     
     get().initializeDeck()
+    
+    // Initialize scores
+    const scores = {}
+    players.forEach(player => {
+      scores[player.id] = 0
+    })
+    
     set({ 
       gameStatus: 'playing',
       currentRound: 0,
-      currentPlayerIndex: 0
+      currentPlayerIndex: 0,
+      gamePhase: 'draw',
+      playerScores: scores,
+      currentAnswer: null,
+      currentGuess: null,
+      waitingForAnswer: false
     })
     
     // Sync to Firebase if online
@@ -246,7 +272,133 @@ const useGameStore = create((set, get) => ({
   nextPlayer: async () => {
     const { players, currentPlayerIndex } = get()
     const nextIndex = (currentPlayerIndex + 1) % players.length
-    set({ currentPlayerIndex: nextIndex })
+    set({ 
+      currentPlayerIndex: nextIndex,
+      gamePhase: 'draw',
+      currentAnswer: null,
+      currentGuess: null,
+      waitingForAnswer: false
+    })
+    await get().syncGameStateToFirebase()
+  },
+  
+  // Answer system
+  submitAnswer: async (answer) => {
+    const { currentCard, currentPlayerIndex, players } = get()
+    const currentPlayer = players[currentPlayerIndex]
+    
+    set({
+      currentAnswer: {
+        playerId: currentPlayer.id,
+        playerName: currentPlayer.nickname,
+        answer: answer.trim(),
+        cardId: currentCard?.id,
+        cardTitle: currentCard?.title
+      },
+      gamePhase: 'guess',
+      waitingForAnswer: true
+    })
+    
+    await get().syncGameStateToFirebase()
+  },
+  
+  submitGuess: async (guess) => {
+    const { players, currentPlayerIndex, currentAnswer } = get()
+    const guessingPlayerIndex = (currentPlayerIndex + 1) % players.length
+    const guessingPlayer = players[guessingPlayerIndex]
+    
+    if (!currentAnswer) {
+      throw new Error('Brak odpowiedzi do odgadnięcia')
+    }
+    
+    const score = get().calculateScore(currentAnswer.answer, guess.trim())
+    
+    set({
+      currentGuess: {
+        playerId: guessingPlayer.id,
+        playerName: guessingPlayer.nickname,
+        guess: guess.trim(),
+        score: score
+      },
+      gamePhase: 'result'
+    })
+    
+    // Update score
+    const { playerScores } = get()
+    const newScores = {
+      ...playerScores,
+      [guessingPlayer.id]: (playerScores[guessingPlayer.id] || 0) + score
+    }
+    set({ playerScores: newScores })
+    
+    await get().syncGameStateToFirebase()
+  },
+  
+  calculateScore: (correctAnswer, guess) => {
+    // Normalize strings for comparison
+    const normalize = (str) => str.toLowerCase().trim().replace(/[^\w\s]/g, '')
+    const correct = normalize(correctAnswer)
+    const guessed = normalize(guess)
+    
+    // Exact match
+    if (correct === guessed) {
+      return 10
+    }
+    
+    // Check if guess contains correct answer or vice versa
+    if (correct.includes(guessed) || guessed.includes(correct)) {
+      const similarity = Math.min(correct.length, guessed.length) / Math.max(correct.length, guessed.length)
+      return Math.round(similarity * 8) + 1 // 1-9 points
+    }
+    
+    // Calculate word similarity using Levenshtein distance
+    const distance = get().levenshteinDistance(correct, guessed)
+    const maxLength = Math.max(correct.length, guessed.length)
+    const similarity = 1 - (distance / maxLength)
+    
+    // Score from 0-8 based on similarity
+    return Math.max(0, Math.round(similarity * 8))
+  },
+  
+  levenshteinDistance: (str1, str2) => {
+    const matrix = []
+    const len1 = str1.length
+    const len2 = str2.length
+    
+    for (let i = 0; i <= len2; i++) {
+      matrix[i] = [i]
+    }
+    
+    for (let j = 0; j <= len1; j++) {
+      matrix[0][j] = j
+    }
+    
+    for (let i = 1; i <= len2; i++) {
+      for (let j = 1; j <= len1; j++) {
+        if (str2.charAt(i - 1) === str1.charAt(j - 1)) {
+          matrix[i][j] = matrix[i - 1][j - 1]
+        } else {
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j - 1] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j] + 1
+          )
+        }
+      }
+    }
+    
+    return matrix[len2][len1]
+  },
+  
+  continueToNextRound: async () => {
+    const { currentRound, totalRounds } = get()
+    if (currentRound >= totalRounds - 1) {
+      await get().endGame()
+      return
+    }
+    
+    await get().nextPlayer()
+    set({ currentCard: null, gamePhase: 'draw' })
     await get().syncGameStateToFirebase()
   },
 

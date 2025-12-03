@@ -19,6 +19,9 @@ import VoteModal from '../components/VoteModal'
 import EnhancedGameIntegration from '../components/EnhancedGameIntegration'
 import BiofeedbackDashboard from '../components/BiofeedbackDashboard'
 import Chat from '../components/Chat'
+import AnswerModal from '../components/AnswerModal'
+import GuessModal from '../components/GuessModal'
+import ResultModal from '../components/ResultModal'
 import toast from 'react-hot-toast'
 
 const GamePage = () => {
@@ -40,7 +43,14 @@ const GamePage = () => {
     endGame,
     updateAnalytics,
     startAnalytics,
-    endAnalytics
+    endAnalytics,
+    gamePhase,
+    currentAnswer,
+    currentGuess,
+    playerScores,
+    submitAnswer,
+    submitGuess,
+    continueToNextRound
   } = useGameStore()
 
   const [isCardFlipped, setIsCardFlipped] = useState(false)
@@ -68,11 +78,39 @@ const GamePage = () => {
     // Handle vote cards
     if (card.type === 'Vote') {
       setShowVoteModal(true)
+    } else if (card.type === 'Truth' || card.type === 'Dare') {
+      // For Truth/Dare cards, go to answer phase
+      // The answer modal will be shown automatically
     }
+  }
+  
+  const handleSubmitAnswer = async (answer) => {
+    await submitAnswer(answer)
+    toast.success('Odpowiedź zapisana! Czekaj na odgadnięcie...')
+  }
+  
+  const handleSubmitGuess = async (guess) => {
+    await submitGuess(guess)
+  }
+  
+  const handleContinueAfterResult = async () => {
+    await continueToNextRound()
+    setIsCardFlipped(false)
+  }
+  
+  const handleSkipAnswer = async () => {
+    await skipCard()
+    setIsCardFlipped(false)
+    await nextPlayer()
   }
 
   const handleCardFlip = () => {
     setIsCardFlipped(true)
+    // For Truth/Dare cards, automatically go to answer phase after flip
+    if (currentCard && (currentCard.type === 'Truth' || currentCard.type === 'Dare')) {
+      // The answer phase is already set when card is drawn
+      // Just ensure we're in answer phase
+    }
   }
 
   const handleCardSkip = async () => {
@@ -84,12 +122,15 @@ const GamePage = () => {
 
   const handleCardComplete = async () => {
     setIsCardFlipped(false)
-    await nextPlayer()
-    // Dobierz nową kartę automatycznie po wykonaniu
-    setTimeout(() => {
-      handleDrawCard()
-    }, 400)
-    toast.success('Karta wykonana!')
+    // For Truth/Dare cards, go to answer phase automatically
+    // The answer modal will be shown when gamePhase changes to 'answer'
+    if (!currentCard || (currentCard.type !== 'Truth' && currentCard.type !== 'Dare')) {
+      await nextPlayer()
+      setTimeout(() => {
+        handleDrawCard()
+      }, 400)
+      toast.success('Karta wykonana!')
+    }
   }
 
   const handleVoteComplete = async () => {
@@ -247,7 +288,12 @@ const GamePage = () => {
                         }`}>
                           {index + 1}
                         </div>
-                        <span className="text-white font-semibold">{player.nickname}</span>
+                        <div>
+                          <span className="text-white font-semibold">{player.nickname}</span>
+                          <div className="text-xs text-gray-400">
+                            Punkty: <span className="text-yellow-400 font-bold">{playerScores[player.id] || 0}</span>
+                          </div>
+                        </div>
                       </div>
                       {index === currentPlayerIndex && (
                         <motion.div
@@ -272,7 +318,7 @@ const GamePage = () => {
             className="lg:col-span-2"
           >
             <div className="flex flex-col items-center justify-center min-h-[600px]">
-              {currentCard ? (
+              {currentCard && gamePhase === 'draw' ? (
                 <div className="w-full max-w-md">
                   <Card
                     card={currentCard}
@@ -282,6 +328,48 @@ const GamePage = () => {
                     onComplete={handleCardComplete}
                   />
                 </div>
+              ) : currentCard && gamePhase === 'answer' ? (
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="text-center"
+                >
+                  <div className="text-6xl mb-6">✍️</div>
+                  <h2 className="text-2xl font-serif text-white mb-4">
+                    Czekaj na odpowiedź gracza
+                  </h2>
+                  <p className="text-dark-300">
+                    {currentPlayer?.nickname} wpisuje odpowiedź...
+                  </p>
+                </motion.div>
+              ) : currentCard && gamePhase === 'guess' ? (
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="text-center"
+                >
+                  <div className="text-6xl mb-6">🎯</div>
+                  <h2 className="text-2xl font-serif text-white mb-4">
+                    Czekaj na odgadnięcie
+                  </h2>
+                  <p className="text-dark-300">
+                    {players[(currentPlayerIndex + 1) % players.length]?.nickname} próbuje odgadnąć...
+                  </p>
+                </motion.div>
+              ) : currentCard && gamePhase === 'result' ? (
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="text-center"
+                >
+                  <div className="text-6xl mb-6">🏆</div>
+                  <h2 className="text-2xl font-serif text-white mb-4">
+                    Wynik rundy
+                  </h2>
+                  <p className="text-dark-300">
+                    Sprawdź wynik w modalu!
+                  </p>
+                </motion.div>
               ) : (
                 <motion.div
                   initial={{ scale: 0.9, opacity: 0 }}
@@ -391,6 +479,37 @@ const GamePage = () => {
       
       {/* Chat Component */}
       <Chat />
+      
+      {/* Answer Modal */}
+      {currentCard && gamePhase === 'answer' && (
+        <AnswerModal
+          card={currentCard}
+          currentPlayer={currentPlayer}
+          onSubmit={handleSubmitAnswer}
+          onSkip={handleSkipAnswer}
+        />
+      )}
+      
+      {/* Guess Modal */}
+      {currentCard && gamePhase === 'guess' && currentAnswer && (
+        <GuessModal
+          card={currentCard}
+          currentAnswer={currentAnswer}
+          guessingPlayer={players[(currentPlayerIndex + 1) % players.length]}
+          onSubmit={handleSubmitGuess}
+          onSkip={handleSkipAnswer}
+        />
+      )}
+      
+      {/* Result Modal */}
+      {currentCard && gamePhase === 'result' && currentAnswer && currentGuess && (
+        <ResultModal
+          currentAnswer={currentAnswer}
+          currentGuess={currentGuess}
+          score={currentGuess.score}
+          onContinue={handleContinueAfterResult}
+        />
+      )}
     </div>
   )
 }
