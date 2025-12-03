@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Bot, X, Lightbulb, Sparkles } from 'lucide-react'
+import { Bot, X, Lightbulb, Sparkles, Settings, Wand2 } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
 import aiService from '../services/aiService'
 import toast from 'react-hot-toast'
@@ -17,7 +17,8 @@ const AIBot = () => {
     playerScores,
     localPlayerId,
     requestHint,
-    addAIBotMessage
+    addAIBotMessage,
+    aiBotPersonality
   } = useGameStore()
 
   const [isOpen, setIsOpen] = useState(false)
@@ -29,6 +30,7 @@ const AIBot = () => {
   // Aktualizuj kontekst AI przy zmianie gry
   useEffect(() => {
     if (aiBotEnabled) {
+      aiService.setPersonality(aiBotPersonality)
       aiService.setGameContext({
         players,
         currentCard,
@@ -36,8 +38,13 @@ const AIBot = () => {
         gamePhase,
         playerScores
       })
+      
+      // Dodaj kartę do historii
+      if (currentCard) {
+        aiService.addCardToHistory(currentCard)
+      }
     }
-  }, [aiBotEnabled, players, currentCard, currentRound, gamePhase, playerScores])
+  }, [aiBotEnabled, players, currentCard, currentRound, gamePhase, playerScores, aiBotPersonality])
 
   // Generuj komentarze przy wydarzeniach
   useEffect(() => {
@@ -236,6 +243,29 @@ const AIBot = () => {
                       ? 'Proszę o podpowiedź...'
                       : 'Poproś o podpowiedź (-2 pkt)'}
                   </span>
+                </button>
+              )}
+              
+              {gamePhase === 'draw' && (
+                <button
+                  onClick={async () => {
+                    try {
+                      const suggestion = await aiService.suggestCard()
+                      if (suggestion) {
+                        addAIBotMessage({
+                          type: 'system',
+                          message: `💡 Sugestia: ${suggestion}`,
+                          timestamp: Date.now()
+                        })
+                      }
+                    } catch (error) {
+                      console.error('Error getting card suggestion:', error)
+                    }
+                  }}
+                  className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-300"
+                >
+                  <Wand2 className="w-5 h-5" />
+                  <span>Sugeruj kartę</span>
                 </button>
               )}
             </div>

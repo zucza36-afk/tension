@@ -17,7 +17,11 @@ import {
   EyeOff,
   Search,
   Filter,
-  BookOpen
+  BookOpen,
+  Download,
+  Upload,
+  Star,
+  Wand2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../store/gameStore';
@@ -35,7 +39,12 @@ const CustomCardsPage = () => {
     removeCustomCard,
     customDecks,
     createCustomDeck,
-    addCardToDeck
+    addCardToDeck,
+    rateCard,
+    exportCards,
+    importCards,
+    suggestNewCard,
+    localPlayerId
   } = useGameStore();
   
   const [isCreating, setIsCreating] = useState(false);
@@ -263,13 +272,59 @@ const CustomCardsPage = () => {
               <span>{t('manageDecks') || 'Manage Decks'}</span>
             </button>
             {!showAllCards && (
-              <button
-                onClick={handleCreateCard}
-                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors"
-              >
-                <Plus size={20} />
-                <span>{t('createCard') || 'Create Card'}</span>
-              </button>
+              <>
+                <button
+                  onClick={handleCreateCard}
+                  className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors"
+                >
+                  <Plus size={20} />
+                  <span>{t('createCard') || 'Create Card'}</span>
+                </button>
+                <button
+                  onClick={() => {
+                    const selected = customCards.map(c => c.id)
+                    exportCards(selected)
+                  }}
+                  className="flex items-center space-x-2 bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition-colors"
+                >
+                  <Download size={20} />
+                  <span>{t('export') || 'Export'}</span>
+                </button>
+                <label className="flex items-center space-x-2 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-colors cursor-pointer">
+                  <Upload size={20} />
+                  <span>{t('import') || 'Import'}</span>
+                  <input
+                    type="file"
+                    accept=".json"
+                    onChange={async (e) => {
+                      const file = e.target.files[0]
+                      if (file) {
+                        try {
+                          const count = await importCards(file)
+                          alert(`${count} ${t('cardsImported') || 'cards imported'}`)
+                        } catch (error) {
+                          alert(t('importError') || 'Error importing cards')
+                        }
+                      }
+                    }}
+                    className="hidden"
+                  />
+                </label>
+                <button
+                  onClick={async () => {
+                    const suggestion = await suggestNewCard()
+                    if (suggestion) {
+                      setFormData(suggestion)
+                      setIsCreating(true)
+                      setEditingCard(null)
+                    }
+                  }}
+                  className="flex items-center space-x-2 bg-yellow-600 hover:bg-yellow-700 px-4 py-2 rounded-lg transition-colors"
+                >
+                  <Wand2 size={20} />
+                  <span>{t('suggestCard') || 'AI Suggest'}</span>
+                </button>
+              </>
             )}
           </div>
         </div>
@@ -558,12 +613,47 @@ const CustomCardsPage = () => {
                     {targetTypes.find(t => t.value === card.target)?.label || card.target}
                   </span>
                 </div>
-                {card.updatedAt && (
-                  <span className="text-xs text-gray-500">
-                    {new Date(card.updatedAt).toLocaleDateString()}
-                  </span>
-                )}
+                <div className="flex items-center space-x-2">
+                  {card.averageRating > 0 && (
+                    <div className="flex items-center space-x-1">
+                      <Star size={12} className="text-yellow-400 fill-yellow-400" />
+                      <span className="text-xs text-gray-300">{card.averageRating}</span>
+                    </div>
+                  )}
+                  {card.version > 1 && (
+                    <span className="text-xs text-gray-500">v{card.version}</span>
+                  )}
+                  {card.updatedAt && (
+                    <span className="text-xs text-gray-500">
+                      {new Date(card.updatedAt).toLocaleDateString()}
+                    </span>
+                  )}
+                </div>
               </div>
+
+              {/* Rating Section */}
+              {showAllCards && (
+                <div className="mt-3 pt-3 border-t border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-400">{t('rateCard') || 'Rate this card'}</span>
+                    <div className="flex space-x-1">
+                      {[1, 2, 3, 4, 5].map((rating) => (
+                        <button
+                          key={rating}
+                          onClick={() => rateCard(card.id, rating, localPlayerId || 'guest')}
+                          className={`text-xs ${
+                            card.averageRating >= rating
+                              ? 'text-yellow-400'
+                              : 'text-gray-500 hover:text-yellow-300'
+                          }`}
+                        >
+                          <Star size={14} className={card.averageRating >= rating ? 'fill-current' : ''} />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Tags */}
               {(card.tags || []).length > 0 && (

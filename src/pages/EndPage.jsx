@@ -23,7 +23,8 @@ const EndPage = () => {
     analytics, 
     currentRound,
     usedCards,
-    initializeGame 
+    initializeGame,
+    getAnalyticsReport
   } = useGameStore()
 
   const [email, setEmail] = useState('')
@@ -60,14 +61,11 @@ const EndPage = () => {
   }
 
   const getIntensityDistribution = () => {
-    const distribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
-    usedCards.forEach(card => {
-      distribution[card.intensity]++
-    })
-    return distribution
+    return analytics.intensityDistribution || { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
   }
 
   const intensityDistribution = getIntensityDistribution()
+  const analyticsReport = getAnalyticsReport()
 
   return (
     <div className="min-h-screen gradient-bg p-4">
@@ -188,6 +186,56 @@ const EndPage = () => {
             </div>
           </motion.div>
         </div>
+
+        {/* Detailed Analytics */}
+        {analyticsReport && (
+          <motion.div
+            initial={{ y: 50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12"
+          >
+            {/* Type Distribution */}
+            <div className="bg-dark-800/50 glass-effect rounded-lg p-6">
+              <h2 className="text-xl font-serif text-white mb-4 flex items-center space-x-3">
+                <BarChart3 className="w-5 h-5" />
+                <span>Rozkład typów kart</span>
+              </h2>
+              <div className="space-y-2">
+                {Object.entries(analyticsReport.typeDistribution || {}).map(([type, count]) => (
+                  <div key={type} className="flex items-center justify-between p-2 bg-dark-700/50 rounded">
+                    <span className="text-white text-sm">{type}</span>
+                    <span className="text-white font-semibold">{count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Player Stats */}
+            <div className="bg-dark-800/50 glass-effect rounded-lg p-6">
+              <h2 className="text-xl font-serif text-white mb-4 flex items-center space-x-3">
+                <Users className="w-5 h-5" />
+                <span>Statystyki graczy</span>
+              </h2>
+              <div className="space-y-2">
+                {Object.entries(analyticsReport.playerStats || {}).map(([playerId, stats]) => {
+                  const player = players.find(p => p.id === playerId)
+                  const avgIntensity = stats.intensities?.length > 0
+                    ? (stats.intensities.reduce((a, b) => a + b, 0) / stats.intensities.length).toFixed(1)
+                    : '0'
+                  return (
+                    <div key={playerId} className="p-2 bg-dark-700/50 rounded">
+                      <div className="text-white font-semibold text-sm">{player?.nickname || 'Unknown'}</div>
+                      <div className="text-gray-400 text-xs mt-1">
+                        Karty: {stats.cardsPlayed} | Śr. intensywność: {avgIntensity}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Action Buttons */}
         <motion.div

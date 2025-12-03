@@ -49,14 +49,24 @@ const Card = ({ card, isFlipped, onFlip, onSkip, onComplete }) => {
   if (!card) return null
 
   return (
-    <div className="relative w-full max-w-md mx-auto">
-      {!isFlipped ? (
-        // Card Front
+    <div className="relative w-full max-w-md mx-auto perspective-1000">
+      <motion.div
+        className="relative w-full aspect-[3/4] preserve-3d"
+        animate={{ rotateY: isFlipped ? 180 : 0 }}
+        transition={{ duration: 0.6, ease: "easeInOut" }}
+        style={{ transformStyle: "preserve-3d" }}
+      >
+        {/* Card Front */}
         <motion.div
-          className={`w-full aspect-[3/4] rounded-xl glass-effect border-2 intensity-${card.intensity} flex flex-col items-center justify-center p-6 text-center cursor-pointer`}
+          className={`absolute inset-0 w-full h-full rounded-xl glass-effect border-2 intensity-${card.intensity} flex flex-col items-center justify-center p-6 text-center cursor-pointer backface-hidden`}
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.2 }}
           onClick={onFlip}
+          style={{ 
+            transform: "rotateY(0deg)",
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden"
+          }}
         >
           <div className="absolute top-4 right-4">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center ${getTypeColor(card.type)} bg-dark-800/50`}>
@@ -98,13 +108,15 @@ const Card = ({ card, isFlipped, onFlip, onSkip, onComplete }) => {
             <p className="text-dark-300 text-sm">{t('clickToFlip')}</p>
           </div>
         </motion.div>
-      ) : (
-        // Card Back
+
+        {/* Card Back */}
         <motion.div
-          className={`w-full aspect-[3/4] rounded-xl glass-effect border-2 intensity-${card.intensity} flex flex-col p-6`}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.3 }}
+          className={`absolute inset-0 w-full h-full rounded-xl glass-effect border-2 intensity-${card.intensity} flex flex-col p-6 backface-hidden`}
+          style={{ 
+            transform: "rotateY(180deg)",
+            backfaceVisibility: "hidden",
+            WebkitBackfaceVisibility: "hidden"
+          }}
         >
           <div className="absolute top-4 right-4">
             <div className={`w-8 h-8 rounded-full flex items-center justify-center ${getTypeColor(card.type)} bg-dark-800/50`}>
@@ -154,7 +166,7 @@ const Card = ({ card, isFlipped, onFlip, onSkip, onComplete }) => {
             </div>
           </div>
         </motion.div>
-      )}
+      </motion.div>
     </div>
   )
 }

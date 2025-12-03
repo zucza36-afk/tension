@@ -30,7 +30,13 @@ const SetupPage = () => {
     setIntensityEscalation,
     startGame,
     aiBotEnabled,
-    setAIBotEnabled
+    setAIBotEnabled,
+    aiBotPersonality,
+    setAIBotPersonality,
+    specialMode,
+    setSpecialMode,
+    totalRounds,
+    setTotalRounds
   } = useGameStore()
 
   const [newPlayer, setNewPlayer] = useState({ nickname: '', comfortLevel: 3 })
@@ -333,6 +339,69 @@ const SetupPage = () => {
                     <span className="text-white">AI Bot Prowadzący</span>
                     <span className="text-xs text-gray-400">(Komentuje grę i pomaga)</span>
                   </label>
+                  
+                  {aiBotEnabled && (
+                    <div className="ml-6 mt-2">
+                      <label className="block text-sm text-gray-300 mb-2">Styl osobowości AI</label>
+                      <div className="flex space-x-2">
+                        {[
+                          { value: 'funny', label: '😄 Zabawny', desc: 'Wesoły i dowcipny' },
+                          { value: 'serious', label: '🎯 Poważny', desc: 'Profesjonalny i wspierający' },
+                          { value: 'flirty', label: '💋 Flirciarski', desc: 'Uwodzicielski i elegancki' }
+                        ].map((style) => (
+                          <button
+                            key={style.value}
+                            onClick={() => setAIBotPersonality(style.value)}
+                            className={`flex-1 p-2 rounded-lg border-2 transition-all text-xs ${
+                              aiBotPersonality === style.value
+                                ? 'border-purple-500 bg-purple-500/20'
+                                : 'border-gray-700 bg-gray-800/50 hover:border-gray-600'
+                            }`}
+                          >
+                            <div className="font-semibold text-white">{style.label}</div>
+                            <div className="text-gray-400 text-xs mt-1">{style.desc}</div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Special Modes */}
+                <div className="mt-6">
+                  <label className="block text-dark-200 mb-3">Tryby specjalne</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { value: 'quick', label: '⚡ Szybki', desc: '5 minut', icon: '⚡' },
+                      { value: 'marathon', label: '🏃 Maraton', desc: 'Długa sesja', icon: '🏃' },
+                      { value: 'random', label: '🎲 Losowy', desc: 'Całkowicie losowe', icon: '🎲' },
+                      { value: 'challenge', label: '🔥 Wyzwanie', desc: 'Tylko trudne', icon: '🔥' }
+                    ].map((mode) => (
+                      <button
+                        key={mode.value}
+                        onClick={() => setSpecialMode(specialMode === mode.value ? null : mode.value)}
+                        className={`p-3 rounded-lg border-2 transition-all text-left ${
+                          specialMode === mode.value
+                            ? 'border-purple-500 bg-purple-500/20'
+                            : 'border-gray-700 bg-gray-800/50 hover:border-gray-600'
+                        }`}
+                      >
+                        <div className="text-2xl mb-1">{mode.icon}</div>
+                        <div className="text-white font-semibold text-sm">{mode.label}</div>
+                        <div className="text-gray-400 text-xs">{mode.desc}</div>
+                      </button>
+                    ))}
+                  </div>
+                  {specialMode && (
+                    <div className="mt-3 p-3 bg-purple-500/10 border border-purple-500/30 rounded-lg">
+                      <p className="text-purple-300 text-sm">
+                        {specialMode === 'quick' && 'Tryb szybki: 5 rund, szybka rozgrywka!'}
+                        {specialMode === 'marathon' && 'Tryb maraton: 50 rund, długa sesja!'}
+                        {specialMode === 'random' && 'Tryb losowy: całkowicie losowe karty z całej talii!'}
+                        {specialMode === 'challenge' && 'Tryb wyzwanie: tylko karty o intensywności 4-5!'}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

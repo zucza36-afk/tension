@@ -24,6 +24,7 @@ import GuessModal from '../components/GuessModal'
 import ResultModal from '../components/ResultModal'
 import AIBot from '../components/AIBot'
 import HintRequestModal from '../components/HintRequestModal'
+import MusicSync from '../components/MusicSync'
 import toast from 'react-hot-toast'
 
 const GamePage = () => {
@@ -515,7 +516,10 @@ const GamePage = () => {
       
       {/* AI Bot */}
       <AIBot />
-      
+
+      {/* Music Sync */}
+      <MusicSync />
+
       {/* Hint Request Modal */}
       <HintRequestModal />
     </div>

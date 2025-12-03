@@ -3,13 +3,15 @@ import { cardDeck, getCardsByIntensity, shuffleDeck } from '../data/cards'
 import * as sessionService from '../firebase/sessionService'
 import { ref, set } from 'firebase/database'
 import { realtimeDb } from '../firebase/config'
+import aiService from '../services/aiService'
 
 const useGameStore = create((set, get) => ({
   // Game state
-  gameMode: 'classic', // classic, elimination, freeplay
+  gameMode: 'classic', // classic, elimination, freeplay, quick, marathon, random, challenge
   gameStatus: 'setup', // setup, playing, paused, ended
   currentRound: 0,
   totalRounds: 10,
+  specialMode: null, // quick, marathon, random, challenge
   
   // Players
   players: [],
@@ -55,6 +57,7 @@ const useGameStore = create((set, get) => ({
   aiBotMessages: [], // { id, type: 'comment'|'hint'|'system', message, timestamp, playerId? }
   pendingHintRequest: null, // { playerId, playerName, question, hint }
   hintPenalty: 2, // Punkty odejmowane za podpowiedź
+  aiBotPersonality: 'funny', // funny, serious, flirty
   
   // Initialize game
   initializeGame: async () => {
@@ -176,7 +179,7 @@ const useGameStore = create((set, get) => ({
   },
   
   drawCard: async () => {
-    const { deck, usedCards, currentRound, intensityEscalation, maxIntensity } = get()
+    const { deck, usedCards, currentRound, intensityEscalation, maxIntensity, specialMode } = get()
     
     if (deck.length === 0) {
       // Reshuffle used cards if deck is empty
@@ -188,8 +191,26 @@ const useGameStore = create((set, get) => ({
     let card = deck[0]
     const remainingDeck = deck.slice(1)
     
+    // Special mode logic
+    if (specialMode === 'random') {
+      // Completely random card from all available cards
+      const allCards = [...cardDeck, ...get().customCards]
+      const availableCards = allCards.filter(c => 
+        !usedCards.some(uc => uc.id === c.id)
+      )
+      if (availableCards.length > 0) {
+        card = availableCards[Math.floor(Math.random() * availableCards.length)]
+      }
+    } else if (specialMode === 'challenge') {
+      // Only high intensity cards (4-5)
+      const challengeCards = deck.filter(c => c.intensity >= 4)
+      if (challengeCards.length > 0) {
+        card = challengeCards[Math.floor(Math.random() * challengeCards.length)]
+      }
+    }
+    
     // Intensity escalation over time
-    if (intensityEscalation && currentRound > 5) {
+    if (intensityEscalation && currentRound > 5 && specialMode !== 'challenge') {
       const escalatedCards = cardDeck.filter(c => 
         c.intensity <= Math.min(maxIntensity + 1, 5) && 
         c.intensity > card.intensity
@@ -217,6 +238,21 @@ const useGameStore = create((set, get) => ({
     await get().syncGameStateToFirebase()
     
     return card
+  },
+  
+  setSpecialMode: (mode) => {
+    set({ specialMode: mode })
+    
+    // Apply special mode settings
+    if (mode === 'quick') {
+      set({ totalRounds: 5 }) // 5 minutes = ~5 rounds
+    } else if (mode === 'marathon') {
+      set({ totalRounds: 50 }) // Long session
+    } else if (mode === 'random') {
+      // No special settings, just random card selection
+    } else if (mode === 'challenge') {
+      set({ maxIntensity: 5 }) // Only max intensity
+    }
   },
   
   skipCard: async () => {
@@ -714,42 +750,199 @@ const useGameStore = create((set, get) => ({
     safeWordsUsed: 0,
     gameDuration: 0,
     startTime: null,
+    cardHistory: [], // Detailed card history
+    playerStats: {}, // { playerId: { cardsPlayed, cardsSkipped, avgIntensity, favoriteType } }
+    intensityDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+    typeDistribution: {}, // { Truth: 0, Dare: 0, ... }
+    roundTimings: [], // Time per round
+    preferences: {
+      favoriteIntensity: null,
+      favoriteType: null,
+      mostActivePlayer: null
+    }
   },
   
   updateAnalytics: (updates) => {
-    const { analytics } = get()
-    set({ analytics: { ...analytics, ...updates } })
+    const { analytics, currentCard, currentPlayerIndex, players } = get()
+    
+    // Track card details if currentCard exists
+    if (currentCard && updates.cardsPlayed) {
+      const cardEntry = {
+        cardId: currentCard.id,
+        cardTitle: currentCard.title,
+        type: currentCard.type,
+        intensity: currentCard.intensity,
+        playerId: players[currentPlayerIndex]?.id,
+        playerName: players[currentPlayerIndex]?.nickname,
+        timestamp: Date.now(),
+        round: analytics.cardsPlayed + 1
+      }
+      
+      const newCardHistory = [...(analytics.cardHistory || []), cardEntry]
+      
+      // Update intensity distribution
+      const newIntensityDist = { ...(analytics.intensityDistribution || { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }) }
+      newIntensityDist[currentCard.intensity] = (newIntensityDist[currentCard.intensity] || 0) + 1
+      
+      // Update type distribution
+      const newTypeDist = { ...(analytics.typeDistribution || {}) }
+      newTypeDist[currentCard.type] = (newTypeDist[currentCard.type] || 0) + 1
+      
+      // Update player stats
+      const newPlayerStats = { ...(analytics.playerStats || {}) }
+      const playerId = players[currentPlayerIndex]?.id
+      if (playerId) {
+        if (!newPlayerStats[playerId]) {
+          newPlayerStats[playerId] = {
+            cardsPlayed: 0,
+            cardsSkipped: 0,
+            intensities: [],
+            types: []
+          }
+        }
+        newPlayerStats[playerId].cardsPlayed++
+        newPlayerStats[playerId].intensities.push(currentCard.intensity)
+        newPlayerStats[playerId].types.push(currentCard.type)
+      }
+      
+      set({
+        analytics: {
+          ...analytics,
+          ...updates,
+          cardHistory: newCardHistory,
+          intensityDistribution: newIntensityDist,
+          typeDistribution: newTypeDist,
+          playerStats: newPlayerStats
+        }
+      })
+    } else {
+      set({ analytics: { ...analytics, ...updates } })
+    }
   },
   
   startAnalytics: () => {
     set({ 
       analytics: {
-        ...get().analytics,
-        startTime: Date.now()
+        cardsPlayed: 0,
+        cardsSkipped: 0,
+        safeWordsUsed: 0,
+        gameDuration: 0,
+        startTime: Date.now(),
+        cardHistory: [],
+        playerStats: {},
+        intensityDistribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+        typeDistribution: {},
+        roundTimings: [],
+        preferences: {
+          favoriteIntensity: null,
+          favoriteType: null,
+          mostActivePlayer: null
+        }
       }
     })
   },
   
   endAnalytics: () => {
-    const { analytics } = get()
+    const { analytics, players, usedCards } = get()
     const duration = analytics.startTime ? Date.now() - analytics.startTime : 0
+    
+    // Calculate preferences
+    const intensityCounts = analytics.intensityDistribution || { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 }
+    const favoriteIntensity = Object.entries(intensityCounts)
+      .sort(([,a], [,b]) => b - a)[0]?.[0] || null
+    
+    const typeCounts = analytics.typeDistribution || {}
+    const favoriteType = Object.entries(typeCounts)
+      .sort(([,a], [,b]) => b - a)[0]?.[0] || null
+    
+    const playerActivity = Object.entries(analytics.playerStats || {})
+      .map(([id, stats]) => ({
+        id,
+        name: players.find(p => p.id === id)?.nickname || 'Unknown',
+        cardsPlayed: stats.cardsPlayed || 0
+      }))
+      .sort((a, b) => b.cardsPlayed - a.cardsPlayed)[0]
+    
     set({
       analytics: {
         ...analytics,
-        gameDuration: duration
+        gameDuration: duration,
+        endTime: Date.now(),
+        preferences: {
+          favoriteIntensity: favoriteIntensity ? parseInt(favoriteIntensity) : null,
+          favoriteType: favoriteType,
+          mostActivePlayer: playerActivity
+        }
       }
     })
+  },
+  
+  getAnalyticsReport: () => {
+    const { analytics, players, usedCards } = get()
+    
+    return {
+      summary: {
+        totalCards: analytics.cardsPlayed || 0,
+        skippedCards: analytics.cardsSkipped || 0,
+        duration: analytics.gameDuration || 0,
+        players: players.length
+      },
+      intensityDistribution: analytics.intensityDistribution || { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+      typeDistribution: analytics.typeDistribution || {},
+      playerStats: analytics.playerStats || {},
+      preferences: analytics.preferences || {},
+      cardHistory: analytics.cardHistory || [],
+      topCards: (usedCards || [])
+        .map(card => ({
+          ...card,
+          playCount: (analytics.cardHistory || []).filter(ch => ch.cardId === card.id).length
+        }))
+        .sort((a, b) => b.playCount - a.playCount)
+        .slice(0, 10)
+    }
   },
   
   // Custom cards management
   addCustomCard: (card) => {
     const { customCards } = get()
-    const newCards = [...customCards, card]
+    const newCard = {
+      ...card,
+      id: card.id || `card_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+      version: 1,
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      ratings: [],
+      averageRating: 0,
+      playCount: 0,
+      lastPlayed: null
+    }
+    const newCards = [...customCards, newCard]
     set({ customCards: newCards })
     localStorage.setItem('napiecie_customCards', JSON.stringify(newCards))
   },
 
   updateCustomCard: (updatedCard) => {
+    const { customCards } = get()
+    const existingCard = customCards.find(c => c.id === updatedCard.id)
+    if (!existingCard) return
+    
+    // Create new version
+    const newVersion = {
+      ...updatedCard,
+      version: (existingCard.version || 1) + 1,
+      updatedAt: Date.now(),
+      previousVersion: existingCard.version || 1,
+      // Preserve ratings and playCount
+      ratings: existingCard.ratings || [],
+      averageRating: existingCard.averageRating || 0,
+      playCount: existingCard.playCount || 0,
+      lastPlayed: existingCard.lastPlayed
+    }
+    
+    const updatedCards = customCards.map(card => 
+      card.id === updatedCard.id ? newVersion : card
+    )
+    set({ customCards: updatedCards })
     const { customCards } = get()
     const newCards = customCards.map(card =>
       card.id === updatedCard.id ? updatedCard : card
@@ -758,6 +951,111 @@ const useGameStore = create((set, get) => ({
     localStorage.setItem('napiecie_customCards', JSON.stringify(newCards))
   },
 
+  rateCard: (cardId, rating, playerId) => {
+    const { customCards } = get()
+    const card = customCards.find(c => c.id === cardId)
+    if (!card) return
+    
+    const ratings = card.ratings || []
+    // Remove existing rating from this player
+    const filteredRatings = ratings.filter(r => r.playerId !== playerId)
+    // Add new rating
+    const newRatings = [...filteredRatings, { playerId, rating, timestamp: Date.now() }]
+    
+    // Calculate average
+    const averageRating = newRatings.reduce((sum, r) => sum + r.rating, 0) / newRatings.length
+    
+    const updatedCards = customCards.map(c => 
+      c.id === cardId 
+        ? { ...c, ratings: newRatings, averageRating: averageRating.toFixed(1) }
+        : c
+    )
+    set({ customCards: updatedCards })
+  },
+  
+  suggestNewCard: async () => {
+    // Use AI to suggest a new card based on game history
+    try {
+      const { analytics, players } = get()
+      const favoriteType = analytics.preferences?.favoriteType || 'Truth'
+      const favoriteIntensity = analytics.preferences?.favoriteIntensity || 3
+      
+      // This would call AI service to generate card suggestion
+      // For now, return a template
+      return {
+        title: '',
+        description: '',
+        type: favoriteType,
+        intensity: favoriteIntensity,
+        target: 'one',
+        tags: [],
+        suggested: true
+      }
+    } catch (error) {
+      console.error('Error suggesting card:', error)
+      return null
+    }
+  },
+  
+  exportCards: (cardIds) => {
+    const { customCards } = get()
+    const cardsToExport = cardIds 
+      ? customCards.filter(c => cardIds.includes(c.id))
+      : customCards
+    
+    const exportData = {
+      version: '1.0',
+      exportDate: new Date().toISOString(),
+      cards: cardsToExport.map(c => ({
+        title: c.title,
+        description: c.description,
+        type: c.type,
+        target: c.target,
+        intensity: c.intensity,
+        tags: c.tags || []
+      }))
+    }
+    
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `napiecie-cards-${Date.now()}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  },
+  
+  importCards: (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        try {
+          const importData = JSON.parse(e.target.result)
+          const { customCards } = get()
+          
+          const importedCards = importData.cards.map(card => ({
+            ...card,
+            id: `card_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+            version: 1,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+            ratings: [],
+            averageRating: 0,
+            playCount: 0,
+            imported: true
+          }))
+          
+          set({ customCards: [...customCards, ...importedCards] })
+          resolve(importedCards.length)
+        } catch (error) {
+          reject(new Error('Invalid file format'))
+        }
+      }
+      reader.onerror = reject
+      reader.readAsText(file)
+    })
+  },
+  
   removeCustomCard: (cardId) => {
     const { customCards } = get()
     const newCards = customCards.filter(card => card.id !== cardId)
@@ -916,6 +1214,13 @@ const useGameStore = create((set, get) => ({
     set({ aiBotEnabled: enabled })
     if (!enabled) {
       set({ aiBotMessages: [], pendingHintRequest: null })
+    }
+  },
+  
+  setAIBotPersonality: (personality) => {
+    set({ aiBotPersonality: personality })
+    if (typeof aiService !== 'undefined') {
+      aiService.setPersonality(personality)
     }
   },
   
