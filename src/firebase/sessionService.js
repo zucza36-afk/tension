@@ -26,21 +26,25 @@ import { db, realtimeDb, isFirebaseConfigured } from './config'
 // Session management
 export const createSession = async (sessionData) => {
   if (!isFirebaseConfigured() || !db) {
+    console.log('[Firebase] Firebase not configured, skipping online session creation')
     const error = new Error('Firebase nie jest skonfigurowane')
     error.code = 'FIREBASE_NOT_CONFIGURED'
     throw error
   }
-  
+
   try {
+    console.log('[Firebase] Creating session in Firestore:', sessionData.sessionId)
     const sessionRef = doc(db, 'sessions', sessionData.sessionId)
     await setDoc(sessionRef, {
       ...sessionData,
       createdAt: new Date(),
       status: 'active'
     })
+    console.log('[Firebase] Session created successfully in Firestore')
     return sessionData.sessionId
   } catch (error) {
-    console.error('Error creating session in Firebase:', error)
+    console.error('[Firebase] Error creating session in Firestore:', error)
+    console.error('[Firebase] Error details:', error.code, error.message)
     // Re-throw with more context
     error.code = error.code || 'FIREBASE_ERROR'
     throw error
