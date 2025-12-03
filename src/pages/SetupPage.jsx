@@ -96,41 +96,40 @@ const SetupPage = () => {
   }
 
   return (
-    <div className="min-h-screen gradient-bg p-4">
+    <div className="min-h-screen gradient-bg p-3 md:p-4 pb-6 md:pb-8">
       <div className="max-w-4xl mx-auto">
-        {/* DEBUG: Show page loaded */}
-        <div style={{position: 'fixed', top: '10px', right: '10px', background: 'red', color: 'white', padding: '5px', zIndex: 9999}}>
-          SETUP PAGE LOADED
-        </div>
 
         {/* Header */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="flex items-center justify-between mb-8"
+          className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 md:mb-8"
         >
           <button
             onClick={() => navigate('/')}
-            className="flex items-center space-x-2 text-dark-200 hover:text-white transition-colors"
+            className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors text-sm sm:text-base"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             <span>{t('back')}</span>
           </button>
 
-          <div className="text-center">
-            <h1 className="text-3xl font-serif text-white mb-2">{t('gameSetup')}</h1>
+          <div className="text-center flex-1">
+            <h1 className="text-2xl md:text-3xl font-serif text-white mb-3">{t('gameSetup')}</h1>
             {sessionCode && (
-              <div className="flex items-center justify-center space-x-2">
-                <p className="text-dark-300">{t('sessionCode')}: <span className="font-mono text-accent-400">{sessionCode}</span></p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
+                <div className="flex items-center space-x-2 bg-gray-800/60 backdrop-blur-sm border border-purple-500/30 rounded-lg px-3 py-2">
+                  <span className="text-gray-300 text-sm">{t('sessionCode')}:</span>
+                  <span className="font-mono text-lg md:text-xl font-bold text-purple-400 tracking-wider">{sessionCode}</span>
+                </div>
                 {isOnlineSession ? (
-                  <div className="flex items-center space-x-1 text-green-400">
-                    <Wifi className="w-4 h-4" />
-                    <span className="text-xs">Online</span>
+                  <div className="flex items-center space-x-1 bg-green-500/20 border border-green-500/30 rounded-lg px-2 py-1">
+                    <Wifi className="w-4 h-4 text-green-400" />
+                    <span className="text-xs text-green-400 font-medium">Online</span>
                   </div>
                 ) : (
-                  <div className="flex items-center space-x-1 text-dark-400">
-                    <WifiOff className="w-4 h-4" />
-                    <span className="text-xs">Lokalnie</span>
+                  <div className="flex items-center space-x-1 bg-gray-700/50 border border-gray-600/30 rounded-lg px-2 py-1">
+                    <WifiOff className="w-4 h-4 text-gray-400" />
+                    <span className="text-xs text-gray-400 font-medium">Lokalnie</span>
                   </div>
                 )}
               </div>
@@ -139,36 +138,36 @@ const SetupPage = () => {
 
           <button
             onClick={() => setShowSettings(!showSettings)}
-            className="flex items-center space-x-2 text-dark-200 hover:text-white transition-colors"
+            className="flex items-center space-x-2 text-gray-300 hover:text-white transition-colors text-sm sm:text-base"
           >
-            <Settings className="w-5 h-5" />
+            <Settings className="w-4 h-4 sm:w-5 sm:h-5" />
             <span>{t('settings')}</span>
           </button>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
           {/* Players Section */}
           <motion.div
             initial={{ x: -50, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="bg-dark-800/50 glass-effect rounded-lg p-6"
+            className="bg-gray-900/60 backdrop-blur-md border border-gray-700/50 rounded-xl p-4 md:p-6"
           >
-            <h2 className="text-2xl font-serif text-white mb-6 flex items-center space-x-3">
-              <Users className="w-6 h-6" />
+            <h2 className="text-xl md:text-2xl font-serif text-white mb-4 md:mb-6 flex items-center space-x-3">
+              <Users className="w-5 h-5 md:w-6 md:h-6" />
               <span>{t('players')} ({players.length})</span>
             </h2>
 
             {/* Add Player Form */}
-            <div className="space-y-4 mb-6">
+            <div className="space-y-3 md:space-y-4 mb-4 md:mb-6">
               <div>
-                <label className="block text-dark-200 mb-2">{t('nickname')}</label>
+                <label className="block text-gray-300 mb-2 text-sm md:text-base">{t('nickname')}</label>
                 <input
                   type="text"
                   value={newPlayer.nickname}
                   onChange={(e) => setNewPlayer({ ...newPlayer, nickname: e.target.value })}
                   placeholder={t('nicknamePlaceholder')}
-                  className="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-3 text-white placeholder-dark-400 focus:outline-none focus:border-primary-500"
+                  className="w-full bg-gray-800/80 border border-gray-700 rounded-lg px-3 md:px-4 py-2.5 md:py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 text-sm md:text-base"
                   maxLength={20}
                 />
               </div>
@@ -193,9 +192,9 @@ const SetupPage = () => {
 
               <button
                 onClick={handleAddPlayer}
-                className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-2 text-sm md:text-base"
               >
-                <Plus className="w-5 h-5" />
+                <Plus className="w-4 h-4 md:w-5 md:h-5" />
                 <span>{t('addPlayer')}</span>
               </button>
             </div>
@@ -241,10 +240,10 @@ const SetupPage = () => {
             className="space-y-6"
           >
             {/* Game Settings */}
-            <div className="bg-dark-800/50 glass-effect rounded-lg p-6">
-              <h2 className="text-2xl font-serif text-white mb-6 flex items-center space-x-3">
-                <Sliders className="w-6 h-6" />
-                <span>Ustawienia gry</span>
+            <div className="bg-gray-900/60 backdrop-blur-md border border-gray-700/50 rounded-xl p-4 md:p-6">
+              <h2 className="text-xl md:text-2xl font-serif text-white mb-4 md:mb-6 flex items-center space-x-3">
+                <Sliders className="w-5 h-5 md:w-6 md:h-6" />
+                <span className="text-base md:text-xl">Ustawienia gry</span>
               </h2>
 
               <div className="space-y-6">
@@ -329,9 +328,9 @@ const SetupPage = () => {
               transition={{ delay: 0.6 }}
               onClick={handleStartGame}
               disabled={players.length < 2}
-              className="w-full bg-accent-600 hover:bg-accent-700 disabled:bg-dark-600 disabled:cursor-not-allowed text-white font-semibold py-4 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-3"
+              className="w-full bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-700 hover:to-cyan-700 disabled:from-gray-700 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center space-x-3 text-base md:text-lg"
             >
-              <Play className="w-6 h-6" />
+              <Play className="w-5 h-5 md:w-6 md:h-6" />
               <span>Rozpocznij grę</span>
             </motion.button>
           </motion.div>

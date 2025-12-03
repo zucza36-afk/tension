@@ -17,14 +17,16 @@ const HomePage = () => {
   const t = (key) => getTranslation(key, language)
 
   const handleCreateGame = async () => {
-    console.log('[HomePage] handleCreateGame called - TESTING DIRECT NAVIGATION')
     try {
-      console.log('[HomePage] Testing direct navigation to /setup...')
+      // Create session first
+      const { sessionId, sessionCode: newSessionCode } = await createSession()
+      console.log('[HomePage] Session created:', { sessionId, sessionCode: newSessionCode })
+      toast.success(t('sessionCreated') || `Sesja utworzona! Kod: ${newSessionCode}`)
       navigate('/setup')
-      console.log('[HomePage] Navigation executed')
     } catch (error) {
-      console.error('[HomePage] Navigation error:', error)
-      toast.error('Błąd nawigacji: ' + error.message)
+      console.error('[HomePage] Error creating session:', error)
+      // Still navigate to setup even if session creation fails
+      navigate('/setup')
     }
   }
 
@@ -45,7 +47,7 @@ const HomePage = () => {
   }
 
   return (
-    <div className="min-h-screen gradient-bg flex flex-col items-center justify-center p-4 py-12 relative">
+    <div className="min-h-screen gradient-bg flex flex-col items-center justify-center p-3 md:p-4 py-8 md:py-12 relative">
       {/* Animated Logo */}
       <motion.div
         initial={{ scale: 0, opacity: 0 }}
@@ -71,11 +73,11 @@ const HomePage = () => {
           </div>
         </motion.div>
         
-        <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-white text-shadow-lg mb-6 tracking-tight">
+        <h1 className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-white text-shadow-lg mb-4 md:mb-6 tracking-tight px-2">
           {t('gameTitle')}
         </h1>
         
-        <p className="text-lg md:text-xl lg:text-2xl text-gray-300 font-light max-w-2xl mx-auto leading-relaxed">
+        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-300 font-light max-w-2xl mx-auto leading-relaxed px-4">
           {t('gameSubtitle')}
         </p>
       </motion.div>
@@ -85,9 +87,9 @@ const HomePage = () => {
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.3 }}
-        className="w-full max-w-2xl space-y-6"
+        className="w-full max-w-2xl space-y-4 md:space-y-6 px-2"
       >
-        <div className="flex flex-col sm:flex-row gap-4">
+        <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
           <button
             onClick={(e) => {
               e.preventDefault()
@@ -96,34 +98,34 @@ const HomePage = () => {
               handleCreateGame()
             }}
             type="button"
-            className="flex-1 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 hover:from-purple-500 hover:via-pink-500 hover:to-purple-500 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-purple-500/50 flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden glow-effect"
+            className="flex-1 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 hover:from-purple-500 hover:via-pink-500 hover:to-purple-500 text-white font-semibold py-3 md:py-4 px-6 md:px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-purple-500/50 flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden glow-effect text-base md:text-lg"
           >
-            <Play className="w-5 h-5 group-hover:scale-110 transition-transform" />
-            <span className="text-lg">{t('createGame') || 'Utwórz grę'}</span>
+            <Play className="w-4 h-4 md:w-5 md:h-5 group-hover:scale-110 transition-transform" />
+            <span>{t('createGame') || 'Utwórz grę'}</span>
           </button>
 
           <button
             onClick={() => setShowJoinModal(true)}
-            className="flex-1 bg-gray-800/80 hover:bg-gray-700/80 backdrop-blur-sm border border-gray-700/50 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-3 group"
+            className="flex-1 bg-gray-800/80 hover:bg-gray-700/80 backdrop-blur-sm border border-gray-700/50 text-white font-semibold py-3 md:py-4 px-6 md:px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-3 group text-base md:text-lg"
           >
-            <Users className="w-5 h-5 group-hover:scale-110 transition-transform" />
-            <span className="text-lg">{t('joinGame')}</span>
+            <Users className="w-4 h-4 md:w-5 md:h-5 group-hover:scale-110 transition-transform" />
+            <span>{t('joinGame')}</span>
           </button>
         </div>
 
         {/* Feature Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 mt-6 md:mt-8 w-full">
           <motion.button
             whileHover={{ scale: 1.05, y: -4 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => navigate('/couples-mode')}
-            className="bg-gray-900/60 hover:bg-gray-900/80 backdrop-blur-md glow-border text-white font-medium py-6 px-4 rounded-2xl transition-all duration-300 flex flex-col items-center justify-center space-y-3 group relative overflow-hidden"
+            className="bg-gray-900/60 hover:bg-gray-900/80 backdrop-blur-md glow-border text-white font-medium py-4 md:py-6 px-2 md:px-4 rounded-xl md:rounded-2xl transition-all duration-300 flex flex-col items-center justify-center space-y-2 md:space-y-3 group relative overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div className="p-3 bg-pink-500/20 rounded-xl group-hover:bg-pink-500/30 transition-colors relative z-10">
-              <Heart className="w-7 h-7 text-pink-400 drop-shadow-[0_0_10px_rgba(236,72,153,0.6)]" />
+            <div className="p-2 md:p-3 bg-pink-500/20 rounded-lg md:rounded-xl group-hover:bg-pink-500/30 transition-colors relative z-10">
+              <Heart className="w-5 h-5 md:w-7 md:h-7 text-pink-400 drop-shadow-[0_0_10px_rgba(236,72,153,0.6)]" />
             </div>
-            <span className="text-sm font-semibold relative z-10">{t('couplesMode') || 'Couples Mode'}</span>
+            <span className="text-xs md:text-sm font-semibold relative z-10 text-center">{t('couplesMode') || 'Couples Mode'}</span>
           </motion.button>
 
           <motion.button
@@ -156,13 +158,13 @@ const HomePage = () => {
             whileHover={{ scale: 1.05, y: -4 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => navigate('/custom-decks')}
-            className="bg-gray-900/60 hover:bg-gray-900/80 backdrop-blur-md glow-border text-white font-medium py-6 px-4 rounded-2xl transition-all duration-300 flex flex-col items-center justify-center space-y-3 group relative overflow-hidden"
+            className="bg-gray-900/60 hover:bg-gray-900/80 backdrop-blur-md glow-border text-white font-medium py-4 md:py-6 px-2 md:px-4 rounded-xl md:rounded-2xl transition-all duration-300 flex flex-col items-center justify-center space-y-2 md:space-y-3 group relative overflow-hidden"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div className="p-3 bg-amber-500/20 rounded-xl group-hover:bg-amber-500/30 transition-colors relative z-10">
-              <Layers className="w-7 h-7 text-amber-400 drop-shadow-[0_0_10px_rgba(245,158,11,0.6)]" />
+            <div className="p-2 md:p-3 bg-amber-500/20 rounded-lg md:rounded-xl group-hover:bg-amber-500/30 transition-colors relative z-10">
+              <Layers className="w-5 h-5 md:w-7 md:h-7 text-amber-400 drop-shadow-[0_0_10px_rgba(245,158,11,0.6)]" />
             </div>
-            <span className="text-sm font-semibold relative z-10">{t('customDecks') || 'Custom Decks'}</span>
+            <span className="text-xs md:text-sm font-semibold relative z-10 text-center">{t('customDecks') || 'Custom Decks'}</span>
           </motion.button>
         </div>
 
@@ -173,10 +175,10 @@ const HomePage = () => {
         >
           <button
             onClick={() => navigate('/game')}
-            className="w-full bg-gradient-to-r from-emerald-600 via-cyan-600 to-emerald-600 hover:from-emerald-500 hover:via-cyan-500 hover:to-emerald-500 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-cyan-500/50 flex items-center justify-center space-x-3 group relative overflow-hidden glow-effect"
+            className="w-full bg-gradient-to-r from-emerald-600 via-cyan-600 to-emerald-600 hover:from-emerald-500 hover:via-cyan-500 hover:to-emerald-500 text-white font-semibold py-3 md:py-4 px-4 md:px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-cyan-500/50 flex items-center justify-center space-x-3 group relative overflow-hidden glow-effect text-base md:text-lg"
           >
-            <Brain className="w-5 h-5 group-hover:scale-110 transition-transform" />
-            <span className="text-lg">{t('biofeedbackMode') || 'Biofeedback Mode'}</span>
+            <Brain className="w-4 h-4 md:w-5 md:h-5 group-hover:scale-110 transition-transform" />
+            <span>{t('biofeedbackMode') || 'Biofeedback Mode'}</span>
           </button>
         </motion.div>
       </motion.div>
@@ -186,7 +188,7 @@ const HomePage = () => {
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.6 }}
-        className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto w-full"
+        className="mt-12 md:mt-20 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto w-full px-2"
       >
         <motion.div
           whileHover={{ y: -6, scale: 1.02 }}
