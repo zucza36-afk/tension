@@ -43,6 +43,9 @@ const useGameStore = create((set, get) => ({
   isOnlineSession: false,
   localPlayerId: null,
   unsubscribeFunctions: [],
+  isHost: false,
+  openRooms: [],
+  playerJoinNotifications: [],
   
   // Chat
   chatMessages: [],
@@ -428,11 +431,12 @@ const useGameStore = create((set, get) => ({
   },
 
   // Session management
-  createSession: async () => {
-    console.log('[createSession] Starting session creation...')
+  createSession: async (settings = {}) => {
+    console.log('[createSession] Starting session creation...', settings)
     const sessionCode = Math.random().toString(36).substring(2, 8).toUpperCase()
     const sessionId = Date.now().toString()
     const localPlayerId = `player_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
+    const hostName = settings.hostName || 'Host'
     
     console.log('[createSession] Generated sessionCode:', sessionCode, 'sessionId:', sessionId)
     
@@ -441,7 +445,8 @@ const useGameStore = create((set, get) => ({
       sessionId, 
       sessionCode, 
       isOnlineSession: false,
-      localPlayerId: null
+      localPlayerId: null,
+      isHost: false
     })
     
     try {
@@ -451,12 +456,23 @@ const useGameStore = create((set, get) => ({
         sessionId,
         sessionCode,
         hostId: localPlayerId,
+        hostName: hostName,
         status: 'active',
-        gameMode: 'classic',
-        maxIntensity: 3,
-        consensualFilter: true,
-        intensityEscalation: true
+        gameMode: settings.gameMode || get().gameMode || 'classic',
+        maxIntensity: settings.maxIntensity || get().maxIntensity || 3,
+        consensualFilter: settings.consensualFilter !== undefined ? settings.consensualFilter : get().consensualFilter !== undefined ? get().consensualFilter : true,
+        intensityEscalation: settings.intensityEscalation !== undefined ? settings.intensityEscalation : get().intensityEscalation !== undefined ? get().intensityEscalation : true,
+        aiBotEnabled: settings.aiBotEnabled || false,
+        playerCount: 1,
+        maxPlayers: settings.maxPlayers || 10
       })
+      
+      // Update local settings if provided
+      if (settings.gameMode) set({ gameMode: settings.gameMode })
+      if (settings.maxIntensity) set({ maxIntensity: settings.maxIntensity })
+      if (settings.consensualFilter !== undefined) set({ consensualFilter: settings.consensualFilter })
+      if (settings.intensityEscalation !== undefined) set({ intensityEscalation: settings.intensityEscalation })
+      if (settings.aiBotEnabled !== undefined) set({ aiBotEnabled: settings.aiBotEnabled })
       console.log('[createSession] Firebase session created successfully')
       
       // Try to initialize game state in Firebase (non-critical)
@@ -480,13 +496,31 @@ const useGameStore = create((set, get) => ({
         sessionId, 
         sessionCode, 
         isOnlineSession: true,
-        localPlayerId 
+        localPlayerId,
+        isHost: true
       })
       
       // Subscribe to game state changes
       try {
         get().subscribeToOnlineGame()
         console.log('[createSession] Subscribed to online game state')
+        
+        // Subscribe to player join notifications for host
+        const unsubNotifications = sessionService.subscribeToPlayerJoinNotifications(
+          sessionId,
+          localPlayerId,
+          (notification) => {
+            const { playerJoinNotifications } = get()
+            set({
+              playerJoinNotifications: [...playerJoinNotifications, {
+                id: `notif_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+                ...notification,
+                timestamp: Date.now()
+              }]
+            })
+          }
+        )
+        get().unsubscribeFunctions.push(unsubNotifications)
       } catch (subError) {
         console.warn('[createSession] Failed to subscribe, continuing anyway:', subError.message)
       }
@@ -511,10 +545,12 @@ const useGameStore = create((set, get) => ({
         sessionCode: session.sessionCode,
         isOnlineSession: true,
         localPlayerId,
+        isHost: false,
         gameMode: session.gameMode || 'classic',
         maxIntensity: session.maxIntensity || 3,
         consensualFilter: session.consensualFilter !== undefined ? session.consensualFilter : true,
-        intensityEscalation: session.intensityEscalation !== undefined ? session.intensityEscalation : true
+        intensityEscalation: session.intensityEscalation !== undefined ? session.intensityEscalation : true,
+        aiBotEnabled: session.aiBotEnabled || false
       })
       
       // Subscribe to game state changes
@@ -963,6 +999,38 @@ const useGameStore = create((set, get) => ({
   
   clearAIBotMessages: () => {
     set({ aiBotMessages: [] })
+  },
+  
+  // Open rooms management
+  loadOpenRooms: async () => {
+    try {
+      const rooms = await sessionService.getOpenRooms(20)
+      set({ openRooms: rooms })
+      return rooms
+    } catch (error) {
+      console.error('Error loading open rooms:', error)
+      return []
+    }
+  },
+  
+  subscribeToOpenRooms: (callback) => {
+    const unsubscribe = sessionService.subscribeToOpenRooms((rooms) => {
+      set({ openRooms: rooms })
+      if (callback) callback(rooms)
+    })
+    
+    return unsubscribe
+  },
+  
+  clearPlayerJoinNotifications: () => {
+    set({ playerJoinNotifications: [] })
+  },
+  
+  removePlayerJoinNotification: (notificationId) => {
+    const { playerJoinNotifications } = get()
+    set({
+      playerJoinNotifications: playerJoinNotifications.filter(n => n.id !== notificationId)
+    })
   }
 }))
 

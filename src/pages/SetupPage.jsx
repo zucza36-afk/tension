@@ -6,6 +6,7 @@ import { useGameStore } from '../store/gameStore'
 import { useLanguageStore } from '../store/languageStore'
 import { getTranslation } from '../utils/translations'
 import Chat from '../components/Chat'
+import PlayerJoinNotification from '../components/PlayerJoinNotification'
 import toast from 'react-hot-toast'
 
 const SetupPage = () => {
@@ -354,6 +355,9 @@ const SetupPage = () => {
       
       {/* Chat Component */}
       {(sessionId || isOnlineSession) && <Chat />}
+      
+      {/* Player Join Notifications */}
+      <PlayerJoinNotification />
     </div>
   )
 }

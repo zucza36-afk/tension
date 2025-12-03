@@ -88,6 +88,135 @@ export const updateSession = async (sessionId, updates) => {
   }
 }
 
+// Get list of open rooms
+export const getOpenRooms = async (limitCount = 20) => {
+  if (!isFirebaseConfigured() || !db) {
+    return []
+  }
+  
+  try {
+    const sessionsRef = collection(db, 'sessions')
+    const q = query(
+      sessionsRef,
+      where('status', '==', 'active'),
+      orderBy('createdAt', 'desc'),
+      limit(limitCount)
+    )
+    
+    const querySnapshot = await getDocs(q)
+    const rooms = []
+    
+    querySnapshot.forEach((doc) => {
+      const data = doc.data()
+      rooms.push({
+        id: doc.id,
+        sessionCode: data.sessionCode,
+        hostId: data.hostId,
+        hostName: data.hostName || 'Host',
+        gameMode: data.gameMode || 'classic',
+        maxIntensity: data.maxIntensity || 3,
+        playerCount: data.playerCount || 0,
+        maxPlayers: data.maxPlayers || 10,
+        createdAt: data.createdAt?.toDate?.() || new Date(data.createdAt),
+        settings: {
+          gameMode: data.gameMode,
+          maxIntensity: data.maxIntensity,
+          consensualFilter: data.consensualFilter,
+          intensityEscalation: data.intensityEscalation,
+          aiBotEnabled: data.aiBotEnabled
+        }
+      })
+    })
+    
+    return rooms
+  } catch (error) {
+    console.error('Error getting open rooms:', error)
+    return []
+  }
+}
+
+// Subscribe to open rooms
+export const subscribeToOpenRooms = (callback, limitCount = 20) => {
+  if (!isFirebaseConfigured() || !db) {
+    return () => {}
+  }
+  
+  const sessionsRef = collection(db, 'sessions')
+  const q = query(
+    sessionsRef,
+    where('status', '==', 'active'),
+    orderBy('createdAt', 'desc'),
+    limit(limitCount)
+  )
+  
+  return onSnapshot(q, (querySnapshot) => {
+    const rooms = []
+    querySnapshot.forEach((doc) => {
+      const data = doc.data()
+      rooms.push({
+        id: doc.id,
+        sessionCode: data.sessionCode,
+        hostId: data.hostId,
+        hostName: data.hostName || 'Host',
+        gameMode: data.gameMode || 'classic',
+        maxIntensity: data.maxIntensity || 3,
+        playerCount: data.playerCount || 0,
+        maxPlayers: data.maxPlayers || 10,
+        createdAt: data.createdAt?.toDate?.() || new Date(data.createdAt),
+        settings: {
+          gameMode: data.gameMode,
+          maxIntensity: data.maxIntensity,
+          consensualFilter: data.consensualFilter,
+          intensityEscalation: data.intensityEscalation,
+          aiBotEnabled: data.aiBotEnabled
+        }
+      })
+    })
+    callback(rooms)
+  }, (error) => {
+    console.error('Error subscribing to open rooms:', error)
+    callback([])
+  })
+}
+
+// Subscribe to player join notifications for host
+export const subscribeToPlayerJoinNotifications = (sessionId, hostId, callback) => {
+  if (!isFirebaseConfigured() || !realtimeDb) {
+    return () => {}
+  }
+  
+  const playersRef = ref(realtimeDb, `games/${sessionId}/players`)
+  
+  let previousPlayerCount = 0
+  
+  const unsubscribe = onValue(playersRef, (snapshot) => {
+    const playersData = snapshot.val()
+    const currentPlayerCount = playersData ? Object.keys(playersData).length : 0
+    
+    // If player count increased, notify host
+    if (currentPlayerCount > previousPlayerCount && previousPlayerCount > 0) {
+      const newPlayers = Object.entries(playersData || {})
+        .filter(([_, player]) => player.id !== hostId)
+        .map(([_, player]) => player)
+      
+      if (newPlayers.length > 0) {
+        callback({
+          type: 'player_joined',
+          player: newPlayers[newPlayers.length - 1], // Most recent
+          playerCount: currentPlayerCount
+        })
+      }
+    }
+    
+    previousPlayerCount = currentPlayerCount
+  })
+  
+  return () => {
+    off(playersRef)
+    unsubscribe()
+  }
+}
+
 export const joinSession = async (sessionCode) => {
   if (!isFirebaseConfigured() || !db) {
     throw new Error('Firebase nie jest skonfigurowane')
@@ -172,7 +301,7 @@ export const subscribeToPlayers = (sessionId, callback) => {
 }
 
 export const addPlayerToSession = async (sessionId, player) => {
-  if (!isFirebaseConfigured() || !realtimeDb) {
+  if (!isFirebaseConfigured() || !realtimeDb || !db) {
     throw new Error('Firebase nie jest skonfigurowane')
   }
   
@@ -183,6 +312,22 @@ export const addPlayerToSession = async (sessionId, player) => {
       ...player,
       joinedAt: Date.now()
     })
+    
+    // Update player count in session
+    try {
+      const sessionRef = doc(db, 'sessions', sessionId)
+      const sessionSnap = await getDoc(sessionRef)
+      if (sessionSnap.exists()) {
+        const currentCount = sessionSnap.data().playerCount || 0
+        await updateDoc(sessionRef, {
+          playerCount: currentCount + 1
+        })
+      }
+    } catch (countError) {
+      console.warn('Error updating player count:', countError)
+      // Don't fail the whole operation
+    }
+    
     return newPlayerRef.key
   } catch (error) {
     console.error('Error adding player:', error)

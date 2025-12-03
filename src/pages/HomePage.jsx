@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Heart, Users, Play, Settings, Shield, Star, Plus, Brain, Target, Layers, Eye, X } from 'lucide-react'
+import { Heart, Users, Play, Settings, Shield, Star, Plus, Brain, Target, Layers, Eye, X, DoorOpen } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
 import { useLanguageStore } from '../store/languageStore'
 import { getTranslation } from '../utils/translations'
+import CreateRoomModal from '../components/CreateRoomModal'
+import OpenRoomsList from '../components/OpenRoomsList'
+import PlayerJoinNotification from '../components/PlayerJoinNotification'
 import toast from 'react-hot-toast'
 
 const HomePage = () => {
@@ -12,6 +15,7 @@ const HomePage = () => {
   const { createSession, joinSession } = useGameStore()
   const { language } = useLanguageStore()
   const [showJoinModal, setShowJoinModal] = useState(false)
+  const [showCreateRoomModal, setShowCreateRoomModal] = useState(false)
   const [sessionCode, setSessionCode] = useState('')
 
   const t = (key) => getTranslation(key, language)
@@ -27,6 +31,18 @@ const HomePage = () => {
       console.error('[HomePage] Error creating session:', error)
       // Still navigate to setup even if session creation fails
       navigate('/setup')
+    }
+  }
+
+  const handleCreateRoom = async (settings) => {
+    try {
+      const { sessionId, sessionCode: newSessionCode } = await createSession(settings)
+      console.log('[HomePage] Room created:', { sessionId, sessionCode: newSessionCode })
+      toast.success(t('roomCreated') || `Pokój utworzony! Kod: ${newSessionCode}`)
+      navigate('/setup')
+    } catch (error) {
+      console.error('[HomePage] Error creating room:', error)
+      toast.error(t('errorCreatingRoom') || 'Błąd tworzenia pokoju')
     }
   }
 
@@ -102,6 +118,14 @@ const HomePage = () => {
           >
             <Play className="w-4 h-4 md:w-5 md:h-5 group-hover:scale-110 transition-transform" />
             <span>{t('createGame') || 'Utwórz grę'}</span>
+          </button>
+
+          <button
+            onClick={() => setShowCreateRoomModal(true)}
+            className="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 text-white font-semibold py-3 md:py-4 px-6 md:px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-blue-500/50 flex items-center justify-center space-x-3 group relative overflow-hidden glow-effect text-base md:text-lg"
+          >
+            <DoorOpen className="w-4 h-4 md:w-5 md:h-5 group-hover:scale-110 transition-transform" />
+            <span>{t('createRoom') || 'Utwórz pokój'}</span>
           </button>
 
           <button
@@ -181,6 +205,16 @@ const HomePage = () => {
             <span>{t('biofeedbackMode') || 'Biofeedback Mode'}</span>
           </button>
         </motion.div>
+      </motion.div>
+
+      {/* Open Rooms Section */}
+      <motion.div
+        initial={{ y: 50, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, delay: 0.5 }}
+        className="mt-8 md:mt-12 w-full max-w-4xl mx-auto px-2"
+      >
+        <OpenRoomsList />
       </motion.div>
 
       {/* Features */}
@@ -282,6 +316,16 @@ const HomePage = () => {
           </motion.div>
         </div>
       )}
+
+      {/* Create Room Modal */}
+      <CreateRoomModal
+        isOpen={showCreateRoomModal}
+        onClose={() => setShowCreateRoomModal(false)}
+        onCreate={handleCreateRoom}
+      />
+
+      {/* Player Join Notifications */}
+      <PlayerJoinNotification />
     </div>
   )
 }
