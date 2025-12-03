@@ -5,6 +5,7 @@ import { Users, Settings, Play, ArrowLeft, Plus, X, Sliders, Wifi, WifiOff } fro
 import { useGameStore } from '../store/gameStore'
 import { useLanguageStore } from '../store/languageStore'
 import { getTranslation } from '../utils/translations'
+import Chat from '../components/Chat'
 import toast from 'react-hot-toast'
 
 const SetupPage = () => {
@@ -16,6 +17,7 @@ const SetupPage = () => {
     removePlayer, 
     updatePlayer,
     sessionCode,
+    sessionId,
     isOnlineSession,
     gameMode,
     maxIntensity,
@@ -336,6 +338,9 @@ const SetupPage = () => {
           </motion.div>
         </div>
       </div>
+      
+      {/* Chat Component */}
+      {(sessionId || isOnlineSession) && <Chat />}
     </div>
   )
 }

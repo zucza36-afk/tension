@@ -18,6 +18,7 @@ import SafeWordButton from '../components/SafeWordButton'
 import VoteModal from '../components/VoteModal'
 import EnhancedGameIntegration from '../components/EnhancedGameIntegration'
 import BiofeedbackDashboard from '../components/BiofeedbackDashboard'
+import Chat from '../components/Chat'
 import toast from 'react-hot-toast'
 
 const GamePage = () => {
@@ -387,6 +388,9 @@ const GamePage = () => {
           </motion.div>
         </div>
       )}
+      
+      {/* Chat Component */}
+      <Chat />
     </div>
   )
 }

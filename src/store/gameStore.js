@@ -35,6 +35,9 @@ const useGameStore = create((set, get) => ({
   localPlayerId: null,
   unsubscribeFunctions: [],
   
+  // Chat
+  chatMessages: [],
+  
   // Initialize game
   initializeGame: async () => {
     // Clean up any existing online session
@@ -399,6 +402,21 @@ const useGameStore = create((set, get) => ({
     })
     newUnsubs.push(unsubPlayers)
     
+    // Subscribe to chat
+    const unsubChat = sessionService.subscribeToChat(sessionId, (chatData) => {
+      if (chatData) {
+        // Convert Firebase object to array
+        const messagesArray = Object.entries(chatData)
+          .map(([id, message]) => ({
+            id,
+            ...message
+          }))
+          .sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0))
+        set({ chatMessages: messagesArray })
+      }
+    })
+    newUnsubs.push(unsubChat)
+    
     set({ unsubscribeFunctions: newUnsubs })
   },
 
@@ -649,6 +667,46 @@ const useGameStore = create((set, get) => ({
   // Update settings
   updateSettings: (settings) => {
     set(settings)
+  },
+  
+  // Chat management
+  sendChatMessage: async (message) => {
+    const { sessionId, isOnlineSession, localPlayerId, players } = get()
+    if (!sessionId || !isOnlineSession) {
+      // Local fallback - add to local messages
+      const newMessage = {
+        id: `local_${Date.now()}`,
+        text: message.text,
+        playerId: message.playerId || localPlayerId,
+        playerName: message.playerName || players.find(p => p.id === message.playerId)?.nickname || 'Gracz',
+        timestamp: Date.now()
+      }
+      set({ chatMessages: [...get().chatMessages, newMessage] })
+      return
+    }
+    
+    try {
+      await sessionService.sendChatMessage(sessionId, {
+        text: message.text,
+        playerId: message.playerId || localPlayerId,
+        playerName: message.playerName || players.find(p => p.id === (message.playerId || localPlayerId))?.nickname || 'Gracz'
+      })
+    } catch (error) {
+      console.error('Error sending chat message:', error)
+      // Fallback to local
+      const newMessage = {
+        id: `local_${Date.now()}`,
+        text: message.text,
+        playerId: message.playerId || localPlayerId,
+        playerName: message.playerName || players.find(p => p.id === message.playerId)?.nickname || 'Gracz',
+        timestamp: Date.now()
+      }
+      set({ chatMessages: [...get().chatMessages, newMessage] })
+    }
+  },
+  
+  clearChatMessages: () => {
+    set({ chatMessages: [] })
   }
 }))
 
