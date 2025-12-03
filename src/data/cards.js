@@ -417,6 +417,1058 @@ export const cardDeck = [
     description: "Wszyscy osiągają orgazm razem.",
     target: "group",
     intensity: 5
+  },
+
+  // NEW ICEBREAKER QUESTIONS FOR COUPLES (LEVEL 1-5)
+
+  // LEVEL 1: VERY GENTLE (Intensity 1, Icebreaker)
+  {
+    id: "card_051",
+    type: "Icebreaker",
+    title: "Pierwsze wrażenie",
+    description: "Jaką pierwszą myśl miałeś/aś, kiedy zobaczyłeś/aś swojego partnera online?",
+    target: "one",
+    intensity: 1
+  },
+  {
+    id: "card_052",
+    type: "Icebreaker",
+    title: "Ulubiony kolor",
+    description: "Jaki kolor kojarzy Ci się z Twoim partnerem i dlaczego?",
+    target: "one",
+    intensity: 1
+  },
+  {
+    id: "card_053",
+    type: "Icebreaker",
+    title: "Poranek czy wieczór",
+    description: "Czy wolisz poranki czy wieczory i dlaczego?",
+    target: "one",
+    intensity: 1
+  },
+  {
+    id: "card_054",
+    type: "Icebreaker",
+    title: "Ulubiony owoc",
+    description: "Jaki owoc byłbyś i dlaczego?",
+    target: "one",
+    intensity: 1
+  },
+  {
+    id: "card_055",
+    type: "Icebreaker",
+    title: "Wyobraź sobie zwierzę",
+    description: "Gdybyś mógł/mogła być zwierzęciem, które byś wybrał/a?",
+    target: "one",
+    intensity: 1
+  },
+  {
+    id: "card_056",
+    type: "Icebreaker",
+    title: "Ulubiona pogoda",
+    description: "Jaka pogoda sprawia, że czujesz się najlepiej?",
+    target: "one",
+    intensity: 1
+  },
+  {
+    id: "card_057",
+    type: "Icebreaker",
+    title: "Senny czy energiczny",
+    description: "Czy jesteś osobą poranną czy nocną?",
+    target: "one",
+    intensity: 1
+  },
+  {
+    id: "card_058",
+    type: "Icebreaker",
+    title: "Ulubiony zapach",
+    description: "Jaki zapach kojarzy Ci się z szczęściem?",
+    target: "one",
+    intensity: 1
+  },
+  {
+    id: "card_059",
+    type: "Icebreaker",
+    title: "Marzenie z dzieciństwa",
+    description: "Jakie miałeś/aś marzenie jako dziecko?",
+    target: "one",
+    intensity: 1
+  },
+  {
+    id: "card_060",
+    type: "Icebreaker",
+    title: "Ulubiona muzyka",
+    description: "Jaka piosenka najbardziej wpływa na Twój nastrój?",
+    target: "one",
+    intensity: 1
+  },
+
+  // LEVEL 2: FRIENDLY (Intensity 1-2, Truth)
+  {
+    id: "card_061",
+    type: "Truth",
+    title: "Wspólne zainteresowanie",
+    description: "Znajdź jedno wspólne zainteresowanie z Twoim partnerem.",
+    target: "one",
+    intensity: 1
+  },
+  {
+    id: "card_062",
+    type: "Truth",
+    title: "Najlepszy dzień",
+    description: "Opowiedz o najlepszym dniu w Twoim życiu.",
+    target: "one",
+    intensity: 1
+  },
+  {
+    id: "card_063",
+    type: "Truth",
+    title: "Ulubione wspomnienie",
+    description: "Jakie jest Twoje najszczęśliwsze wspomnienie?",
+    target: "one",
+    intensity: 1
+  },
+  {
+    id: "card_064",
+    type: "Truth",
+    title: "Gdybyś mógł/mogła cofnąć czas",
+    description: "Co byś zmienił/a w swoim życiu?",
+    target: "one",
+    intensity: 1
+  },
+  {
+    id: "card_065",
+    type: "Truth",
+    title: "Największa odwaga",
+    description: "Jaka była najbardziej odważna rzecz, którą zrobiłeś/aś?",
+    target: "one",
+    intensity: 1
+  },
+  {
+    id: "card_066",
+    type: "Truth",
+    title: "Tajemniczy talent",
+    description: "Jaki masz talent, o którym mało kto wie?",
+    target: "one",
+    intensity: 1
+  },
+  {
+    id: "card_067",
+    type: "Truth",
+    title: "Gdybyś mógł/mogła podróżować",
+    description: "Dokąd byś pojechał/a i dlaczego?",
+    target: "one",
+    intensity: 2
+  },
+  {
+    id: "card_068",
+    type: "Truth",
+    title: "Największy strach",
+    description: "Czego najbardziej się boisz w życiu?",
+    target: "one",
+    intensity: 2
+  },
+  {
+    id: "card_069",
+    type: "Truth",
+    title: "Co cenisz w przyjaciołach",
+    description: "Co cenisz najbardziej w swoich przyjaciołach?",
+    target: "one",
+    intensity: 2
+  },
+  {
+    id: "card_070",
+    type: "Truth",
+    title: "Marzenie na przyszłość",
+    description: "Jakie jest Twoje największe marzenie?",
+    target: "one",
+    intensity: 2
+  },
+
+  // LEVEL 3: PERSONAL (Intensity 2, Truth)
+  {
+    id: "card_071",
+    type: "Truth",
+    title: "Największa tajemnica",
+    description: "Jaka jest Twoja największa tajemnica, którą chciałbyś/chciałabyś podzielić?",
+    target: "one",
+    intensity: 2
+  },
+  {
+    id: "card_072",
+    type: "Truth",
+    title: "Największy sukces",
+    description: "Jaki jest Twój największy sukces w życiu?",
+    target: "one",
+    intensity: 2
+  },
+  {
+    id: "card_073",
+    type: "Truth",
+    title: "Największe wyzwanie",
+    description: "Jakie było Twoje największe wyzwanie życiowe?",
+    target: "one",
+    intensity: 2
+  },
+  {
+    id: "card_074",
+    type: "Truth",
+    title: "Co Cię motywuje",
+    description: "Co Cię najbardziej motywuje do działania?",
+    target: "one",
+    intensity: 2
+  },
+  {
+    id: "card_075",
+    type: "Truth",
+    title: "Największa porażka",
+    description: "Co nauczyła Cię Twoja największa porażka?",
+    target: "one",
+    intensity: 2
+  },
+  {
+    id: "card_076",
+    type: "Truth",
+    title: "Jak radzisz sobie ze stresem",
+    description: "W jaki sposób radzisz sobie ze stresem?",
+    target: "one",
+    intensity: 2
+  },
+  {
+    id: "card_077",
+    type: "Truth",
+    title: "Co Cię uspokaja",
+    description: "Co sprawia, że czujesz się najbardziej spokojny/a?",
+    target: "one",
+    intensity: 2
+  },
+  {
+    id: "card_078",
+    type: "Truth",
+    title: "Twoja pasja",
+    description: "Czym naprawdę pasjonujesz się w życiu?",
+    target: "one",
+    intensity: 2
+  },
+  {
+    id: "card_079",
+    type: "Truth",
+    title: "Najważniejsza lekcja",
+    description: "Jaka jest najważniejsza lekcja, której nauczyłeś/aś się w życiu?",
+    target: "one",
+    intensity: 2
+  },
+  {
+    id: "card_080",
+    type: "Truth",
+    title: "Co Cię czyni szczęśliwym",
+    description: "Co sprawia, że czujesz się naprawdę szczęśliwy/a?",
+    target: "one",
+    intensity: 2
+  },
+
+  // LEVEL 4: INTIMATE (Intensity 3, Truth)
+  {
+    id: "card_081",
+    type: "Truth",
+    title: "Największa fantazja",
+    description: "Opowiedz o swojej najbardziej intymnej fantazji, którą chciałbyś/chciałabyś zrealizować.",
+    target: "one",
+    intensity: 3
+  },
+  {
+    id: "card_082",
+    type: "Truth",
+    title: "Co Cię podnieca",
+    description: "Co najbardziej podnieca Cię psychicznie w drugiej osobie?",
+    target: "one",
+    intensity: 3
+  },
+  {
+    id: "card_083",
+    type: "Truth",
+    title: "Ulubiony sposób bliskości",
+    description: "Jak wyobrażasz sobie idealną chwilę intymnej bliskości?",
+    target: "one",
+    intensity: 3
+  },
+  {
+    id: "card_084",
+    type: "Truth",
+    title: "Najbardziej erotyczna cecha",
+    description: "Jaka cecha charakteru jest dla Ciebie najbardziej erotyczna?",
+    target: "one",
+    intensity: 3
+  },
+  {
+    id: "card_085",
+    type: "Truth",
+    title: "Fantazja o partnerze",
+    description: "Jakie fantazje masz o swoim idealnym partnerze?",
+    target: "one",
+    intensity: 3
+  },
+  {
+    id: "card_086",
+    type: "Truth",
+    title: "Co sprawia dreszcze",
+    description: "Co sprawia, że czujesz dreszcze na całym ciele?",
+    target: "one",
+    intensity: 3
+  },
+  {
+    id: "card_087",
+    type: "Truth",
+    title: "Najbardziej intymne pragnienie",
+    description: "Jakie jest Twoje najbardziej intymne pragnienie wobec partnera?",
+    target: "one",
+    intensity: 3
+  },
+  {
+    id: "card_088",
+    type: "Truth",
+    title: "Seksualna chemia",
+    description: "Co myślisz o chemii seksualnej między nami?",
+    target: "one",
+    intensity: 3
+  },
+  {
+    id: "card_089",
+    type: "Truth",
+    title: "Fantazja na odległość",
+    description: "Jakie fantazje masz o spotkaniach na odległość?",
+    target: "one",
+    intensity: 3
+  },
+  {
+    id: "card_090",
+    type: "Truth",
+    title: "Co Cię rozpala",
+    description: "Co rozpala w Tobie ogień namiętności?",
+    target: "one",
+    intensity: 3
+  },
+  {
+    id: "card_091",
+    type: "Truth",
+    title: "Intymne zwierzenia",
+    description: "Jaka jest Twoja najbardziej intymna tajemnica?",
+    target: "one",
+    intensity: 3
+  },
+  {
+    id: "card_092",
+    type: "Truth",
+    title: "Pragnienie dotyku",
+    description: "Jak wyobrażasz sobie pierwszy intymny dotyk?",
+    target: "one",
+    intensity: 3
+  },
+  {
+    id: "card_093",
+    type: "Truth",
+    title: "Najbardziej zmysłowe",
+    description: "Co jest dla Ciebie najbardziej zmysłowe?",
+    target: "one",
+    intensity: 3
+  },
+  {
+    id: "card_094",
+    type: "Truth",
+    title: "Fantazja o nocy",
+    description: "Opowiedz o swojej fantazji na temat wspólnej nocy.",
+    target: "one",
+    intensity: 3
+  },
+  {
+    id: "card_095",
+    type: "Truth",
+    title: "Co Cię fascynuje",
+    description: "Co najbardziej fascynuje Cię w potencjalnym partnerze?",
+    target: "one",
+    intensity: 3
+  },
+  {
+    id: "card_096",
+    type: "Truth",
+    title: "Namiętne pragnienia",
+    description: "Jakie namiętne pragnienia masz wobec związku?",
+    target: "one",
+    intensity: 3
+  },
+  {
+    id: "card_097",
+    type: "Truth",
+    title: "Erotyczna strona",
+    description: "Jaka jest Twoja najbardziej erotyczna strona?",
+    target: "one",
+    intensity: 3
+  },
+  {
+    id: "card_098",
+    type: "Truth",
+    title: "Fantazja o bliskości",
+    description: "Jak wyobrażasz sobie najbliższą możliwą więź?",
+    target: "one",
+    intensity: 3
+  },
+  {
+    id: "card_099",
+    type: "Truth",
+    title: "Co Cię pociąga",
+    description: "Co najbardziej Cię pociąga fizycznie w drugiej osobie?",
+    target: "one",
+    intensity: 3
+  },
+  {
+    id: "card_100",
+    type: "Truth",
+    title: "Najgorętsze marzenie",
+    description: "Jakie jest Twoje najgorętsze marzenie o miłości fizycznej?",
+    target: "one",
+    intensity: 3
+  },
+
+  // LEVEL 5: DEEP CONNECTION (Intensity 4-5, Truth) - ULTRA GORĄCE TABU I ZAKAZY
+  {
+    id: "card_101",
+    type: "Truth",
+    title: "Najbardziej zakazana fantazja",
+    description: "Jaka jest Twoja najbardziej zakazana i dzika fantazja?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_102",
+    type: "Truth",
+    title: "Co Cię doprowadza do szaleństwa",
+    description: "Co w drugiej osobie doprowadza Cię do szaleństwa z pożądania?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_103",
+    type: "Truth",
+    title: "Fantazja o dominacji",
+    description: "Czy masz fantazje o dominacji lub podporządkowaniu?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_104",
+    type: "Truth",
+    title: "Najbardziej intymny sekret",
+    description: "Jaki sekret nigdy nikomu nie wyjawiłeś/aś?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_105",
+    type: "Truth",
+    title: "Co budzi w Tobie bestię",
+    description: "Co sprawia, że budzi się w Tobie dzika strona?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_106",
+    type: "Truth",
+    title: "Fantazja o trójkącie",
+    description: "Czy kiedykolwiek miałeś/aś fantazje o trójkącie miłosnym?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_107",
+    type: "Truth",
+    title: "Najbardziej namiętny pocałunek",
+    description: "Jak wyobrażasz sobie najbardziej namiętny pocałunek świata?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_108",
+    type: "Truth",
+    title: "Co Cię hipnotyzuje",
+    description: "Co w drugiej osobie hipnotyzuje Cię i nie pozwala oderwać wzroku?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_109",
+    type: "Truth",
+    title: "Fantazja o niewierności",
+    description: "Czy masz fantazje o zdradzie lub tabu?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_110",
+    type: "Truth",
+    title: "Najbardziej erotyczny sen",
+    description: "Opowiedz o swoim najbardziej erotycznym śnie.",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_111",
+    type: "Truth",
+    title: "Co sprawia, że tracisz kontrolę",
+    description: "Co sprawia, że całkowicie tracisz nad sobą kontrolę?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_112",
+    type: "Truth",
+    title: "Fantazja o władzy",
+    description: "Czy pociąga Cię gra o władzę w związku?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_113",
+    type: "Truth",
+    title: "Najbardziej intymne miejsce",
+    description: "Jakie jest Twoje najbardziej intymne, sekretne miejsce na ciele?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_114",
+    type: "Truth",
+    title: "Co Cię uzależnia",
+    description: "Co w potencjalnym partnerze uzależnia Cię od samego początku?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_115",
+    type: "Truth",
+    title: "Fantazja o bólu i przyjemności",
+    description: "Czy pociąga Cię miks bólu i przyjemności?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_116",
+    type: "Truth",
+    title: "Najbardziej dziki impuls",
+    description: "Jaki jest Twój najbardziej dziki, niekontrolowany impuls?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_117",
+    type: "Truth",
+    title: "Co sprawia, że eksplodujesz",
+    description: "Co sprawia, że eksplodujesz z pożądania?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_118",
+    type: "Truth",
+    title: "Fantazja o publicznym akcie",
+    description: "Czy masz fantazje o intymności w miejscu publicznym?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_119",
+    type: "Truth",
+    title: "Najbardziej zmysłowy dotyk",
+    description: "Jak wyobrażasz sobie najbardziej zmysłowy dotyk?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_120",
+    type: "Truth",
+    title: "Co Cię doprowadza na skraj",
+    description: "Co w drugiej osobie doprowadza Cię na skraj wytrzymałości?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_121",
+    type: "Truth",
+    title: "Zakazana miłość",
+    description: "Czy fantazjujesz o zakazanej miłości z kimś niedostępnym?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_122",
+    type: "Truth",
+    title: "Publiczny wstyd",
+    description: "Jaka jest Twoja fantazja o byciu przyłapanym na gorącym uczynku?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_123",
+    type: "Truth",
+    title: "BDSM marzenia",
+    description: "Czy masz fantazje o więzach, karach lub dominacji?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_124",
+    type: "Truth",
+    title: "Zakazane miejsce",
+    description: "Gdzie najbardziej zakazanym miejscu chciałbyś/chciałabyś mieć intymność?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_125",
+    type: "Truth",
+    title: "Ryzyko i adrenalina",
+    description: "Co w ryzyku związanym z intymnością Cię podnieca?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_126",
+    type: "Truth",
+    title: "Tabu relacja",
+    description: "Czy fantazjujesz o związku z kimś, z kim nie powinieneś/powinnaś?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_127",
+    type: "Truth",
+    title: "Publiczna nagość",
+    description: "Jaka jest Twoja fantazja o byciu nago w miejscu publicznym?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_128",
+    type: "Truth",
+    title: "Zakazany dotyk",
+    description: "Czy fantazjujesz o dotyku kogoś obcego?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_129",
+    type: "Truth",
+    title: "Wystawienie na widok",
+    description: "Co myślisz o fantazji bycia obserwowanym podczas intymności?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_130",
+    type: "Truth",
+    title: "Tabu wiek",
+    description: "Czy masz fantazje związane z różnicą wieku?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_131",
+    type: "Truth",
+    title: "Zakazana profesja",
+    description: "Czy fantazjujesz o intymności z kimś z niedostępnej profesji?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_132",
+    type: "Truth",
+    title: "Publiczny taniec",
+    description: "Jaka jest Twoja fantazja o erotycznym tańcu w miejscu publicznym?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_133",
+    type: "Truth",
+    title: "BDSM pozycje",
+    description: "Czy pociąga Cię fantazja o byciu związanym i bezbronnym?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_134",
+    type: "Truth",
+    title: "Zakazane słowa",
+    description: "Jakie zakazane słowa chciałbyś/chciałabyś usłyszeć podczas intymności?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_135",
+    type: "Truth",
+    title: "Ryzyko zdrady",
+    description: "Czy fantazja o zdradzie Cię podnieca?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_136",
+    type: "Truth",
+    title: "Publiczny szept",
+    description: "Jaka jest Twoja fantazja o szeptaniu brudnych sekretów publicznie?",
+    target: "one",
+    intensity: 4
+  },
+  {
+    id: "card_137",
+    type: "Truth",
+    title: "Tabu rodzina",
+    description: "Czy masz fantazje o zakazanych relacjach rodzinnych?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_138",
+    type: "Truth",
+    title: "Zakazane miejsce pracy",
+    description: "Czy fantazjujesz o intymności w miejscu pracy?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_139",
+    type: "Truth",
+    title: "Publiczna kara",
+    description: "Jaka jest Twoja fantazja o publicznej karze za złe zachowanie?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_140",
+    type: "Truth",
+    title: "BDSM narzędzia",
+    description: "Czy pociąga Cię fantazja o używaniu narzędzi do przyjemności/bólu?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_141",
+    type: "Truth",
+    title: "Zakazany strój",
+    description: "Jaki zakazany strój noszony publicznie Cię podnieca?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_142",
+    type: "Truth",
+    title: "Ryzyko aresztowania",
+    description: "Czy fantazja o ryzyku bycia aresztowanym za intymność Cię pociąga?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_143",
+    type: "Truth",
+    title: "Publiczny taniec nago",
+    description: "Fantazjujesz o tańcu nago w tłumie?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_144",
+    type: "Truth",
+    title: "Tabu władza",
+    description: "Czy pociąga Cię fantazja o seksie z szefem/podwładnym?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_145",
+    type: "Truth",
+    title: "Zakazane miejsce święte",
+    description: "Czy fantazjujesz o intymności w miejscu kultu religijnego?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_146",
+    type: "Truth",
+    title: "Publiczna masturbacja",
+    description: "Jaka jest Twoja fantazja o publicznym zaspokojeniu siebie?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_147",
+    type: "Truth",
+    title: "BDSM role",
+    description: "Czy masz fantazje o rolach pana/niewolnicy?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_148",
+    type: "Truth",
+    title: "Zakazany narkotyk",
+    description: "Czy fantazjujesz o intymności pod wpływem substancji?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_149",
+    type: "Truth",
+    title: "Ryzyko wypadku",
+    description: "Czy pociąga Cię fantazja o intymności w niebezpiecznym miejscu?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_150",
+    type: "Truth",
+    title: "Publiczna orgia",
+    description: "Czy masz fantazje o uczestnictwie w orgii?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_151",
+    type: "Truth",
+    title: "Zgadnij rozmiar",
+    description: "Zgadnij jaki rozmiar ma moje przyrodzenie",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_152",
+    type: "Truth",
+    title: "Porównaj wrażliwość",
+    description: "Zgadnij, które miejsce na moim ciele jest najbardziej wrażliwe na dotyk?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_153",
+    type: "Truth",
+    title: "Spekuluj o fantazji",
+    description: "Zgadnij jaką moją najbardziej zakazaną fantazję mogę mieć?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_154",
+    type: "Truth",
+    title: "Oceniaj wytrzymałość",
+    description: "Zgadnij jak długo potrafię wytrzymać bez orgazmu?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_155",
+    type: "Truth",
+    title: "Zgadnij preferencje",
+    description: "Zgadnij, którą część mojego ciała najbardziej lubię, kiedy jest całowana?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_156",
+    type: "Truth",
+    title: "Porównaj namiętność",
+    description: "Zgadnij, czy jestem bardziej namiętny/a niż moi poprzedni partnerzy?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_157",
+    type: "Truth",
+    title: "Spekuluj o tabu",
+    description: "Zgadnij, czy fantazjuję o seksie z Twoją najlepszą przyjaciółką?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_158",
+    type: "Truth",
+    title: "Oceniaj rozmiar",
+    description: "Zgadnij jaki rozmiar mają moje sutki - duże czy małe?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_159",
+    type: "Truth",
+    title: "Zgadnij wrażliwość",
+    description: "Zgadnij, ile sekund wytrzymam z Twoim językiem w uchu?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_160",
+    type: "Truth",
+    title: "Porównaj głośność",
+    description: "Zgadnij, czy jestem głośniejszy/a podczas orgazmu niż Ty?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_161",
+    type: "Truth",
+    title: "Spekuluj o BDSM",
+    description: "Zgadnij, czy wolałbym/byłabym dominować czy być dominowanym?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_162",
+    type: "Truth",
+    title: "Oceniaj krągłość",
+    description: "Zgadnij jak okrągły jest mój tyłek - wysoki czy niski?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_163",
+    type: "Truth",
+    title: "Zgadnij wytrzymałość",
+    description: "Zgadnij ile razy dziennie mogę dojść bez problemu?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_164",
+    type: "Truth",
+    title: "Porównaj smak",
+    description: "Zgadnij, czy mój smak jest słodszy czy słony?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_165",
+    type: "Truth",
+    title: "Spekuluj o trójkącie",
+    description: "Zgadnij, którą Twoją znajomą wybrałbym do trójkąta?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_166",
+    type: "Truth",
+    title: "Oceniaj miękkość",
+    description: "Zgadnij jak miękkie są moje wargi - pełne czy wąskie?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_167",
+    type: "Truth",
+    title: "Zgadnij preferencje",
+    description: "Zgadnij, którą pozycję seksualną lubię najbardziej?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_168",
+    type: "Truth",
+    title: "Porównaj siłę",
+    description: "Zgadnij, czy jestem silniejszy/a w łóżku niż w życiu codziennym?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_169",
+    type: "Truth",
+    title: "Spekuluj o publicznym",
+    description: "Zgadnij, w którym miejscu publicznym chciałbym Cię wziąć?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_170",
+    type: "Truth",
+    title: "Oceniaj wrażliwość",
+    description: "Zgadnij, ile palców mogę wziąć bez bólu?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_171",
+    type: "Truth",
+    title: "Zgadnij rytm",
+    description: "Zgadnij, czy wolę szybki, dziki seks czy wolny i namiętny?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_172",
+    type: "Truth",
+    title: "Porównaj wilgotność",
+    description: "Zgadnij, czy jestem bardziej wilgotny/a niż moi partnerzy?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_173",
+    type: "Truth",
+    title: "Spekuluj o rozmiarze",
+    description: "Zgadnij jaki rozmiar ma moja dłoń - duża czy mała?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_174",
+    type: "Truth",
+    title: "Oceniaj jęki",
+    description: "Zgadnij, jakie dźwięki wydaję podczas orgazmu?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_175",
+    type: "Truth",
+    title: "Zgadnij tabu",
+    description: "Zgadnij, czy fantazjuję o seksie z nieznajomym w windzie?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_176",
+    type: "Truth",
+    title: "Porównaj twardość",
+    description: "Zgadnij, jak twardy/a jestem po przebudzeniu?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_177",
+    type: "Truth",
+    title: "Spekuluj o bólu",
+    description: "Zgadnij, czy lubię lekki ból podczas seksu?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_178",
+    type: "Truth",
+    title: "Oceniaj krzywiznę",
+    description: "Zgadnij, czy mój penis jest prosty czy zakrzywiony?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_179",
+    type: "Truth",
+    title: "Zgadnij wrażliwość",
+    description: "Zgadnij, które słowo wypowiedziane podczas seksu mnie podnieca?",
+    target: "one",
+    intensity: 5
+  },
+  {
+    id: "card_180",
+    type: "Truth",
+    title: "Porównaj apetyt",
+    description: "Zgadnij, czy mam większy apetyt seksualny niż Ty?",
+    target: "one",
+    intensity: 5
   }
 ]
 

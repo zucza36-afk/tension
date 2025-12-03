@@ -1,30 +1,49 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Plus, 
-  Edit, 
-  Trash2, 
-  Save, 
-  X, 
+import {
+  Plus,
+  Edit,
+  Trash2,
+  Save,
+  X,
   Tag,
   FileText,
   Zap,
   Heart,
   Users,
-  ArrowLeft
+  ArrowLeft,
+  Layers,
+  Eye,
+  EyeOff,
+  Search,
+  Filter,
+  BookOpen
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useGameStore } from '../store/gameStore';
 import { useLanguageStore } from '../store/languageStore';
 import { getTranslation } from '../utils/translations';
+import { cardDeck } from '../data/cards';
 
 const CustomCardsPage = () => {
   const navigate = useNavigate();
   const { language } = useLanguageStore();
-  const { customCards, addCustomCard, updateCustomCard, removeCustomCard } = useGameStore();
+  const { 
+    customCards, 
+    addCustomCard, 
+    updateCustomCard, 
+    removeCustomCard,
+    customDecks,
+    createCustomDeck,
+    addCardToDeck
+  } = useGameStore();
   
   const [isCreating, setIsCreating] = useState(false);
   const [editingCard, setEditingCard] = useState(null);
+  const [showAllCards, setShowAllCards] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState('');
+  const [filterIntensity, setFilterIntensity] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -34,6 +53,10 @@ const CustomCardsPage = () => {
     tags: []
   });
   const [newTag, setNewTag] = useState('');
+  const [showDeckModal, setShowDeckModal] = useState(false);
+  const [selectedCardForDeck, setSelectedCardForDeck] = useState(null);
+  const [isCreatingDeck, setIsCreatingDeck] = useState(false);
+  const [newDeckName, setNewDeckName] = useState('');
 
   const t = (key) => getTranslation(key, language);
 
@@ -143,6 +166,57 @@ const CustomCardsPage = () => {
     }));
   };
 
+  const handleAddToDeck = (card) => {
+    setSelectedCardForDeck(card);
+    setShowDeckModal(true);
+    setIsCreatingDeck(false);
+    setNewDeckName('');
+  };
+
+  const handleSelectDeck = (deckId) => {
+    if (selectedCardForDeck) {
+      addCardToDeck(deckId, selectedCardForDeck.id);
+      setShowDeckModal(false);
+      setSelectedCardForDeck(null);
+      alert(t('cardAddedToDeck') || 'Card added to deck successfully!');
+    }
+  };
+
+  const handleCreateNewDeck = () => {
+    if (!newDeckName.trim()) {
+      alert(t('enterDeckName') || 'Please enter deck name');
+      return;
+    }
+    const newDeckId = createCustomDeck({
+      name: newDeckName.trim(),
+      description: '',
+      isPublic: false,
+      tags: []
+    });
+    if (selectedCardForDeck) {
+      addCardToDeck(newDeckId, selectedCardForDeck.id);
+      setShowDeckModal(false);
+      setSelectedCardForDeck(null);
+      setIsCreatingDeck(false);
+      setNewDeckName('');
+      alert(t('cardAddedToDeck') || 'Card added to deck successfully!');
+    }
+  };
+
+  // Get all cards (built-in + custom) with filtering
+  const allCards = [...(cardDeck || []), ...(customCards || [])];
+  const displayCards = showAllCards ? allCards : customCards;
+
+  // Filter cards based on search and filters
+  const filteredCards = displayCards.filter(card => {
+    const matchesSearch = card.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         card.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = !filterType || card.type === filterType;
+    const matchesIntensity = !filterIntensity || card.intensity === parseInt(filterIntensity);
+
+    return matchesSearch && matchesType && matchesIntensity;
+  });
+
   const getCardTypeIcon = (type) => {
     const cardType = cardTypes.find(t => t.value === type);
     return cardType ? cardType.icon : FileText;
@@ -166,20 +240,86 @@ const CustomCardsPage = () => {
               <ArrowLeft size={20} />
             </button>
             <h1 className="text-xl font-bold">
-              {t('customCards') || 'Custom Cards'}
+              {showAllCards ? (t('allCards') || 'All Cards') : (t('customCards') || 'Custom Cards')}
             </h1>
           </div>
-          <button
-            onClick={handleCreateCard}
-            className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors"
-          >
-            <Plus size={20} />
-            <span>{t('createCard') || 'Create Card'}</span>
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setShowAllCards(!showAllCards)}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
+                showAllCards
+                  ? 'bg-purple-600 hover:bg-purple-700'
+                  : 'bg-gray-600 hover:bg-gray-700'
+              }`}
+            >
+              {showAllCards ? <EyeOff size={20} /> : <Eye size={20} />}
+              <span>{showAllCards ? (t('showCustom') || 'Show Custom') : (t('showAll') || 'Show All')}</span>
+            </button>
+            <button
+              onClick={() => navigate('/custom-decks')}
+              className="flex items-center space-x-2 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-colors"
+            >
+              <Layers size={20} />
+              <span>{t('manageDecks') || 'Manage Decks'}</span>
+            </button>
+            {!showAllCards && (
+              <button
+                onClick={handleCreateCard}
+                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors"
+              >
+                <Plus size={20} />
+                <span>{t('createCard') || 'Create Card'}</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
       <div className="p-4 max-w-6xl mx-auto">
+        {/* Search and Filter Bar */}
+        <div className="bg-gray-800 rounded-xl p-4 mb-6 border border-gray-700">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                <input
+                  type="text"
+                  placeholder={t('searchCards') || 'Search cards...'}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full bg-gray-700 border border-gray-600 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:border-blue-500"
+                />
+              </div>
+            </div>
+            <div className="flex items-center space-x-2">
+              <select
+                value={filterType}
+                onChange={(e) => setFilterType(e.target.value)}
+                className="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500"
+              >
+                <option value="">{t('allTypes') || 'All Types'}</option>
+                {cardTypes.map(type => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
+                ))}
+              </select>
+              <select
+                value={filterIntensity}
+                onChange={(e) => setFilterIntensity(e.target.value)}
+                className="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500"
+              >
+                <option value="">{t('allIntensities') || 'All Intensities'}</option>
+                {intensityLevels.map(level => (
+                  <option key={level.value} value={level.value}>
+                    {level.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
         {/* Card Creation/Edit Form */}
         <AnimatePresence>
           {(isCreating || editingCard) && (
@@ -352,9 +492,9 @@ const CustomCardsPage = () => {
           )}
         </AnimatePresence>
 
-        {/* Custom Cards List */}
+        {/* Cards List */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {customCards.map((card) => (
+          {filteredCards.map((card) => (
             <motion.div
               key={card.id}
               initial={{ opacity: 0, scale: 0.9 }}
@@ -373,18 +513,31 @@ const CustomCardsPage = () => {
                   </span>
                 </div>
                 <div className="flex items-center space-x-1">
-                  <button
-                    onClick={() => handleEditCard(card)}
-                    className="p-1 hover:bg-gray-700 rounded transition-colors"
-                  >
-                    <Edit size={16} className="text-blue-400" />
-                  </button>
-                  <button
-                    onClick={() => handleDeleteCard(card.id)}
-                    className="p-1 hover:bg-gray-700 rounded transition-colors"
-                  >
-                    <Trash2 size={16} className="text-red-400" />
-                  </button>
+                  {showAllCards && (
+                    <button
+                      onClick={() => handleAddToDeck(card)}
+                      className="p-1 hover:bg-gray-700 rounded transition-colors"
+                      title={t('addToDeck') || 'Add to Deck'}
+                    >
+                      <BookOpen size={16} className="text-purple-400" />
+                    </button>
+                  )}
+                  {!showAllCards && (
+                    <button
+                      onClick={() => handleEditCard(card)}
+                      className="p-1 hover:bg-gray-700 rounded transition-colors"
+                    >
+                      <Edit size={16} className="text-blue-400" />
+                    </button>
+                  )}
+                  {!showAllCards && (
+                    <button
+                      onClick={() => handleDeleteCard(card.id)}
+                      className="p-1 hover:bg-gray-700 rounded transition-colors"
+                    >
+                      <Trash2 size={16} className="text-red-400" />
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -405,15 +558,17 @@ const CustomCardsPage = () => {
                     {targetTypes.find(t => t.value === card.target)?.label || card.target}
                   </span>
                 </div>
-                <span className="text-xs text-gray-500">
-                  {new Date(card.updatedAt).toLocaleDateString()}
-                </span>
+                {card.updatedAt && (
+                  <span className="text-xs text-gray-500">
+                    {new Date(card.updatedAt).toLocaleDateString()}
+                  </span>
+                )}
               </div>
 
               {/* Tags */}
-              {card.tags.length > 0 && (
+              {(card.tags || []).length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-1">
-                  {card.tags.slice(0, 3).map((tag, index) => (
+                  {(card.tags || []).slice(0, 3).map((tag, index) => (
                     <span
                       key={index}
                       className="flex items-center space-x-1 bg-gray-700 text-gray-300 px-2 py-1 rounded text-xs"
@@ -422,9 +577,9 @@ const CustomCardsPage = () => {
                       <span>{tag}</span>
                     </span>
                   ))}
-                  {card.tags.length > 3 && (
+                  {(card.tags || []).length > 3 && (
                     <span className="text-xs text-gray-500">
-                      +{card.tags.length - 3} more
+                      +{(card.tags || []).length - 3} more
                     </span>
                   )}
                 </div>
@@ -433,25 +588,154 @@ const CustomCardsPage = () => {
           ))}
         </div>
 
+        {/* Deck Selection Modal */}
+        <AnimatePresence>
+          {showDeckModal && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+              onClick={() => {
+                setShowDeckModal(false);
+                setSelectedCardForDeck(null);
+                setIsCreatingDeck(false);
+                setNewDeckName('');
+              }}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-gray-800 rounded-xl p-6 border border-gray-700 max-w-md w-full mx-4"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold">
+                    {isCreatingDeck 
+                      ? (t('createNewDeck') || 'Create New Deck')
+                      : (t('selectDeck') || 'Select Deck')}
+                  </h2>
+                  <button
+                    onClick={() => {
+                      setShowDeckModal(false);
+                      setSelectedCardForDeck(null);
+                      setIsCreatingDeck(false);
+                      setNewDeckName('');
+                    }}
+                    className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                {!isCreatingDeck ? (
+                  <>
+                    {customDecks.length === 0 ? (
+                      <div className="text-center py-8">
+                        <BookOpen size={48} className="text-gray-400 mx-auto mb-4" />
+                        <p className="text-gray-400 mb-4">
+                          {t('noDecksAvailable') || 'No decks available'}
+                        </p>
+                        <button
+                          onClick={() => setIsCreatingDeck(true)}
+                          className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors mx-auto"
+                        >
+                          <Plus size={20} />
+                          <span>{t('createNewDeck') || 'Create New Deck'}</span>
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="mb-4 max-h-64 overflow-y-auto">
+                          {customDecks.map((deck) => (
+                            <button
+                              key={deck.id}
+                              onClick={() => handleSelectDeck(deck.id)}
+                              className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg mb-2 transition-colors"
+                            >
+                              <div className="font-medium">{deck.name}</div>
+                              {deck.description && (
+                                <div className="text-sm text-gray-400 mt-1">{deck.description}</div>
+                              )}
+                              <div className="text-xs text-gray-500 mt-1">
+                                {(deck.cards || []).length} {t('cards') || 'cards'}
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                        <button
+                          onClick={() => setIsCreatingDeck(true)}
+                          className="w-full flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors"
+                        >
+                          <Plus size={20} />
+                          <span>{t('createNewDeck') || 'Create New Deck'}</span>
+                        </button>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <div>
+                    <label className="block text-sm font-medium mb-2">
+                      {t('deckName') || 'Deck Name'} *
+                    </label>
+                    <input
+                      type="text"
+                      value={newDeckName}
+                      onChange={(e) => setNewDeckName(e.target.value)}
+                      className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500 mb-4"
+                      placeholder={t('enterDeckName') || 'Enter deck name...'}
+                      autoFocus
+                    />
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={handleCreateNewDeck}
+                        className="flex-1 flex items-center justify-center space-x-2 bg-green-600 hover:bg-green-700 px-4 py-2 rounded-lg transition-colors"
+                      >
+                        <Save size={20} />
+                        <span>{t('createAndAdd') || 'Create and Add'}</span>
+                      </button>
+                      <button
+                        onClick={() => setIsCreatingDeck(false)}
+                        className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-lg transition-colors"
+                      >
+                        {t('cancel') || 'Cancel'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Empty State */}
-        {customCards.length === 0 && !isCreating && (
+        {filteredCards.length === 0 && !isCreating && (
           <div className="text-center py-12">
             <div className="bg-gray-800 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
               <FileText size={32} className="text-gray-400" />
             </div>
             <h3 className="text-lg font-medium text-gray-300 mb-2">
-              {t('noCustomCards') || 'No custom cards yet'}
+              {showAllCards
+                ? (t('noCardsFound') || 'No cards found')
+                : (t('noCustomCards') || 'No custom cards yet')
+              }
             </h3>
             <p className="text-gray-500 mb-4">
-              {t('createYourFirstCard') || 'Create your first custom card to get started'}
+              {showAllCards
+                ? (t('tryDifferentFilters') || 'Try different search terms or filters')
+                : (t('createYourFirstCard') || 'Create your first custom card to get started')
+              }
             </p>
-            <button
-              onClick={handleCreateCard}
-              className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg transition-colors mx-auto"
-            >
-              <Plus size={20} />
-              <span>{t('createFirstCard') || 'Create First Card'}</span>
-            </button>
+            {!showAllCards && (
+              <button
+                onClick={handleCreateCard}
+                className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg transition-colors mx-auto"
+              >
+                <Plus size={20} />
+                <span>{t('createFirstCard') || 'Create First Card'}</span>
+              </button>
+            )}
           </div>
         )}
       </div>

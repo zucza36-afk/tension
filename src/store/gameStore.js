@@ -18,6 +18,10 @@ const useGameStore = create((set, get) => ({
   currentCard: null,
   usedCards: [],
   customCards: [],
+
+  // Custom decks
+  customDecks: [],
+  selectedDeckId: null,
   
   // Settings
   maxIntensity: 3,
@@ -35,7 +39,11 @@ const useGameStore = create((set, get) => ({
   initializeGame: async () => {
     // Clean up any existing online session
     await get().cleanupOnlineSession()
-    
+
+    // Load saved custom cards and decks
+    get().loadCustomCards()
+    get().loadCustomDecks()
+
     set({
       gameMode: 'classic',
       gameStatus: 'setup',
@@ -46,7 +54,6 @@ const useGameStore = create((set, get) => ({
       deck: [],
       currentCard: null,
       usedCards: [],
-      customCards: [],
       maxIntensity: 3,
       consensualFilter: true,
       intensityEscalation: true,
@@ -55,6 +62,7 @@ const useGameStore = create((set, get) => ({
       isOnlineSession: false,
       localPlayerId: null,
       unsubscribeFunctions: [],
+      selectedDeckId: null,
     })
   },
   
@@ -112,13 +120,36 @@ const useGameStore = create((set, get) => ({
   
   // Card management
   initializeDeck: () => {
-    const { maxIntensity, consensualFilter } = get()
+    const { maxIntensity, consensualFilter, selectedDeckId, customDecks, customCards } = get()
+
     let filteredDeck = cardDeck
-    
-    if (consensualFilter) {
+
+    // If custom deck is selected, use it
+    if (selectedDeckId) {
+      const selectedDeck = customDecks.find(d => d.id === selectedDeckId)
+      if (selectedDeck && selectedDeck.cards.length > 0) {
+        // Get actual card objects from deck's card IDs
+        const deckCards = selectedDeck.cards.map(cardId => {
+          // First check custom cards
+          const customCard = customCards.find(c => c.id === cardId)
+          if (customCard) return customCard
+
+          // Then check built-in cards
+          const builtInCard = cardDeck.find(c => c.id === cardId)
+          return builtInCard
+        }).filter(Boolean)
+
+        if (deckCards.length > 0) {
+          filteredDeck = deckCards
+        }
+      }
+    }
+
+    // Apply intensity filtering if consensual filter is enabled and not using custom deck
+    if (consensualFilter && !selectedDeckId) {
       filteredDeck = getCardsByIntensity(maxIntensity)
     }
-    
+
     const shuffledDeck = shuffleDeck(filteredDeck)
     set({ deck: shuffledDeck })
   },
@@ -493,23 +524,126 @@ const useGameStore = create((set, get) => ({
   // Custom cards management
   addCustomCard: (card) => {
     const { customCards } = get()
-    set({ customCards: [...customCards, card] })
+    const newCards = [...customCards, card]
+    set({ customCards: newCards })
+    localStorage.setItem('napiecie_customCards', JSON.stringify(newCards))
   },
-  
+
   updateCustomCard: (updatedCard) => {
     const { customCards } = get()
-    set({
-      customCards: customCards.map(card => 
-        card.id === updatedCard.id ? updatedCard : card
-      )
-    })
+    const newCards = customCards.map(card =>
+      card.id === updatedCard.id ? updatedCard : card
+    )
+    set({ customCards: newCards })
+    localStorage.setItem('napiecie_customCards', JSON.stringify(newCards))
   },
-  
+
   removeCustomCard: (cardId) => {
     const { customCards } = get()
-    set({
-      customCards: customCards.filter(card => card.id !== cardId)
+    const newCards = customCards.filter(card => card.id !== cardId)
+    set({ customCards: newCards })
+    localStorage.setItem('napiecie_customCards', JSON.stringify(newCards))
+  },
+
+  loadCustomCards: () => {
+    try {
+      const savedCards = localStorage.getItem('napiecie_customCards')
+      if (savedCards) {
+        set({ customCards: JSON.parse(savedCards) })
+      }
+    } catch (error) {
+      console.error('Error loading custom cards:', error)
+    }
+  },
+
+  // Custom decks management
+  createCustomDeck: (deckData) => {
+    const { customDecks } = get()
+    const newDeck = {
+      id: `deck_${Date.now()}`,
+      name: deckData.name,
+      description: deckData.description,
+      cards: deckData.cards || [],
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      isPublic: deckData.isPublic || false,
+      tags: deckData.tags || []
+    }
+    const newDecks = [...customDecks, newDeck]
+    set({ customDecks: newDecks })
+    localStorage.setItem('napiecie_customDecks', JSON.stringify(newDecks))
+    return newDeck.id
+  },
+
+  updateCustomDeck: (updatedDeck) => {
+    const { customDecks } = get()
+    const newDecks = customDecks.map(deck =>
+      deck.id === updatedDeck.id ? { ...updatedDeck, updatedAt: Date.now() } : deck
+    )
+    set({ customDecks: newDecks })
+    localStorage.setItem('napiecie_customDecks', JSON.stringify(newDecks))
+  },
+
+  removeCustomDeck: (deckId) => {
+    const { customDecks } = get()
+    const newDecks = customDecks.filter(deck => deck.id !== deckId)
+    set({ customDecks: newDecks })
+    localStorage.setItem('napiecie_customDecks', JSON.stringify(newDecks))
+  },
+
+  addCardToDeck: (deckId, cardId) => {
+    const { customDecks } = get()
+    const newDecks = customDecks.map(deck => {
+      if (deck.id === deckId && !deck.cards.includes(cardId)) {
+        return { ...deck, cards: [...deck.cards, cardId], updatedAt: Date.now() }
+      }
+      return deck
     })
+    set({ customDecks: newDecks })
+    localStorage.setItem('napiecie_customDecks', JSON.stringify(newDecks))
+  },
+
+  removeCardFromDeck: (deckId, cardId) => {
+    const { customDecks } = get()
+    const newDecks = customDecks.map(deck => {
+      if (deck.id === deckId) {
+        return { ...deck, cards: deck.cards.filter(id => id !== cardId), updatedAt: Date.now() }
+      }
+      return deck
+    })
+    set({ customDecks: newDecks })
+    localStorage.setItem('napiecie_customDecks', JSON.stringify(newDecks))
+  },
+
+  loadCustomDecks: () => {
+    try {
+      const savedDecks = localStorage.getItem('napiecie_customDecks')
+      if (savedDecks) {
+        set({ customDecks: JSON.parse(savedDecks) })
+      }
+    } catch (error) {
+      console.error('Error loading custom decks:', error)
+    }
+  },
+
+  setSelectedDeck: (deckId) => {
+    set({ selectedDeckId: deckId })
+  },
+
+  getDeckCards: (deckId) => {
+    const { customDecks, customCards, cardDeck } = get()
+    const deck = customDecks.find(d => d.id === deckId)
+    if (!deck) return []
+
+    return deck.cards.map(cardId => {
+      // First check custom cards
+      const customCard = customCards.find(c => c.id === cardId)
+      if (customCard) return customCard
+
+      // Then check built-in cards
+      const builtInCard = cardDeck.find(c => c.id === cardId)
+      return builtInCard
+    }).filter(Boolean)
   },
   
   // Update settings

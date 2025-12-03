@@ -98,6 +98,11 @@ const SetupPage = () => {
   return (
     <div className="min-h-screen gradient-bg p-4">
       <div className="max-w-4xl mx-auto">
+        {/* DEBUG: Show page loaded */}
+        <div style={{position: 'fixed', top: '10px', right: '10px', background: 'red', color: 'white', padding: '5px', zIndex: 9999}}>
+          SETUP PAGE LOADED
+        </div>
+
         {/* Header */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}

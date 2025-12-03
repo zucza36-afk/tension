@@ -5,6 +5,7 @@ import SetupPage from './pages/SetupPage'
 import GamePage from './pages/GamePage'
 import EndPage from './pages/EndPage'
 import CustomCardsPage from './pages/CustomCardsPage'
+import CustomDecksPage from './pages/CustomDecksPage'
 import CouplesModePage from './pages/CouplesModePage'
 import IntimateGuessingPage from './pages/IntimateGuessingPage'
 import TestComponent from './components/TestComponent'
@@ -42,6 +43,7 @@ function App() {
         <Route path="/game" element={<GamePage />} />
         <Route path="/end" element={<EndPage />} />
         <Route path="/custom-cards" element={<CustomCardsPage />} />
+        <Route path="/custom-decks" element={<CustomDecksPage />} />
         <Route path="/couples-mode" element={<CouplesModePage />} />
         <Route path="/intimate-guessing" element={<IntimateGuessingPage />} />
         <Route path="/test" element={<TestComponent />} />

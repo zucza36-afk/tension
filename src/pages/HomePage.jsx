@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Heart, Users, Play, Settings, Shield, Star, Plus, Brain, Target } from 'lucide-react'
+import { Heart, Users, Play, Settings, Shield, Star, Plus, Brain, Target, Layers, Eye, X } from 'lucide-react'
 import { useGameStore } from '../store/gameStore'
 import { useLanguageStore } from '../store/languageStore'
 import { getTranslation } from '../utils/translations'
@@ -17,24 +17,14 @@ const HomePage = () => {
   const t = (key) => getTranslation(key, language)
 
   const handleCreateGame = async () => {
-    console.log('[HomePage] handleCreateGame called')
+    console.log('[HomePage] handleCreateGame called - TESTING DIRECT NAVIGATION')
     try {
-      console.log('[HomePage] Calling createSession...')
-      const result = await createSession()
-      console.log('[HomePage] createSession returned:', result)
-      
-      if (result && result.sessionCode) {
-        console.log('[HomePage] Session created successfully, navigating to /setup')
-        toast.success(`${t('gameCreated') || 'Gra utworzona'} ${result.sessionCode}`)
-        // Navigate immediately - state is already set
-        navigate('/setup')
-      } else {
-        console.error('[HomePage] No sessionCode returned:', result)
-        toast.error(t('errorCreatingGame') || 'Błąd tworzenia gry - brak kodu sesji')
-      }
+      console.log('[HomePage] Testing direct navigation to /setup...')
+      navigate('/setup')
+      console.log('[HomePage] Navigation executed')
     } catch (error) {
-      console.error('[HomePage] Error in handleCreateGame:', error)
-      toast.error(t('errorCreatingGame') || 'Błąd tworzenia gry: ' + (error.message || 'Nieznany błąd'))
+      console.error('[HomePage] Navigation error:', error)
+      toast.error('Błąd nawigacji: ' + error.message)
     }
   }
 
@@ -55,34 +45,37 @@ const HomePage = () => {
   }
 
   return (
-    <div className="min-h-screen gradient-bg flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen gradient-bg flex flex-col items-center justify-center p-4 py-12 relative">
       {/* Animated Logo */}
       <motion.div
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="text-center mb-12"
+        className="text-center mb-16"
       >
         <motion.div
           animate={{ 
-            scale: [1, 1.1, 1],
-            rotate: [0, 5, -5, 0]
+            scale: [1, 1.05, 1],
           }}
           transition={{ 
-            duration: 3,
+            duration: 4,
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="inline-block mb-6"
+          className="inline-block mb-8"
         >
-          <Heart className="w-24 h-24 text-primary-500 mx-auto" />
+          <div className="relative">
+            <div className="absolute inset-0 bg-purple-500/30 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute inset-0 bg-pink-500/20 rounded-full blur-2xl"></div>
+            <Heart className="w-20 h-20 md:w-24 md:h-24 text-purple-400 relative z-10 drop-shadow-[0_0_20px_rgba(139,92,246,0.6)]" />
+          </div>
         </motion.div>
         
-        <h1 className="text-6xl md:text-8xl font-serif font-bold text-white text-shadow-lg mb-4">
+        <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold text-white text-shadow-lg mb-6 tracking-tight">
           {t('gameTitle')}
         </h1>
         
-        <p className="text-xl md:text-2xl text-dark-200 font-sans max-w-2xl mx-auto">
+        <p className="text-lg md:text-xl lg:text-2xl text-gray-300 font-light max-w-2xl mx-auto leading-relaxed">
           {t('gameSubtitle')}
         </p>
       </motion.div>
@@ -92,66 +85,100 @@ const HomePage = () => {
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.3 }}
-        className="w-full max-w-md space-y-4"
+        className="w-full max-w-2xl space-y-6"
       >
-        <button
-          onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            console.log('[HomePage] Button clicked')
-            handleCreateGame()
-          }}
-          type="button"
-          className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <Play className="w-6 h-6" />
-          <span>{t('createGame') || 'Utwórz grę'}</span>
-        </button>
-
-        <button
-          onClick={() => setShowJoinModal(true)}
-          className="w-full bg-secondary-600 hover:bg-secondary-700 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-3"
-        >
-          <Users className="w-6 h-6" />
-          <span>{t('joinGame')}</span>
-        </button>
-
-        {/* New Features */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
+        <div className="flex flex-col sm:flex-row gap-4">
           <button
-            onClick={() => navigate('/couples-mode')}
-            className="bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-2"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              console.log('[HomePage] Button clicked')
+              handleCreateGame()
+            }}
+            type="button"
+            className="flex-1 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 hover:from-purple-500 hover:via-pink-500 hover:to-purple-500 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-purple-500/50 flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden glow-effect"
           >
-            <Heart className="w-5 h-5" />
-            <span className="text-sm">{t('couplesMode') || 'Couples Mode'}</span>
+            <Play className="w-5 h-5 group-hover:scale-110 transition-transform" />
+            <span className="text-lg">{t('createGame') || 'Utwórz grę'}</span>
           </button>
 
           <button
-            onClick={() => navigate('/intimate-guessing')}
-            className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-2"
+            onClick={() => setShowJoinModal(true)}
+            className="flex-1 bg-gray-800/80 hover:bg-gray-700/80 backdrop-blur-sm border border-gray-700/50 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center space-x-3 group"
           >
-            <Target className="w-5 h-5" />
-            <span className="text-sm">{t('intimateGuessingGame') || 'Intimate Guessing'}</span>
-          </button>
-
-          <button
-            onClick={() => navigate('/custom-cards')}
-            className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-2"
-          >
-            <Plus className="w-5 h-5" />
-            <span className="text-sm">{t('customCards') || 'Custom Cards'}</span>
+            <Users className="w-5 h-5 group-hover:scale-110 transition-transform" />
+            <span className="text-lg">{t('joinGame')}</span>
           </button>
         </div>
 
-        <div className="mt-4">
+        {/* Feature Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
+          <motion.button
+            whileHover={{ scale: 1.05, y: -4 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => navigate('/couples-mode')}
+            className="bg-gray-900/60 hover:bg-gray-900/80 backdrop-blur-md glow-border text-white font-medium py-6 px-4 rounded-2xl transition-all duration-300 flex flex-col items-center justify-center space-y-3 group relative overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="p-3 bg-pink-500/20 rounded-xl group-hover:bg-pink-500/30 transition-colors relative z-10">
+              <Heart className="w-7 h-7 text-pink-400 drop-shadow-[0_0_10px_rgba(236,72,153,0.6)]" />
+            </div>
+            <span className="text-sm font-semibold relative z-10">{t('couplesMode') || 'Couples Mode'}</span>
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.05, y: -4 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => navigate('/intimate-guessing')}
+            className="bg-gray-900/60 hover:bg-gray-900/80 backdrop-blur-md glow-border text-white font-medium py-6 px-4 rounded-2xl transition-all duration-300 flex flex-col items-center justify-center space-y-3 group relative overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="p-3 bg-purple-500/20 rounded-xl group-hover:bg-purple-500/30 transition-colors relative z-10">
+              <Target className="w-7 h-7 text-purple-400 drop-shadow-[0_0_10px_rgba(139,92,246,0.6)]" />
+            </div>
+            <span className="text-sm font-semibold relative z-10">{t('intimateGuessingGame') || 'Intimate Guessing'}</span>
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.05, y: -4 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => navigate('/custom-cards')}
+            className="bg-gray-900/60 hover:bg-gray-900/80 backdrop-blur-md glow-border text-white font-medium py-6 px-4 rounded-2xl transition-all duration-300 flex flex-col items-center justify-center space-y-3 group relative overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="p-3 bg-blue-500/20 rounded-xl group-hover:bg-blue-500/30 transition-colors relative z-10">
+              <Eye className="w-7 h-7 text-blue-400 drop-shadow-[0_0_10px_rgba(59,130,246,0.6)]" />
+            </div>
+            <span className="text-sm font-semibold relative z-10">{t('browseCards') || 'Browse Cards'}</span>
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.05, y: -4 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => navigate('/custom-decks')}
+            className="bg-gray-900/60 hover:bg-gray-900/80 backdrop-blur-md glow-border text-white font-medium py-6 px-4 rounded-2xl transition-all duration-300 flex flex-col items-center justify-center space-y-3 group relative overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="p-3 bg-amber-500/20 rounded-xl group-hover:bg-amber-500/30 transition-colors relative z-10">
+              <Layers className="w-7 h-7 text-amber-400 drop-shadow-[0_0_10px_rgba(245,158,11,0.6)]" />
+            </div>
+            <span className="text-sm font-semibold relative z-10">{t('customDecks') || 'Custom Decks'}</span>
+          </motion.button>
+        </div>
+
+        <motion.div
+          whileHover={{ scale: 1.01 }}
+          whileTap={{ scale: 0.99 }}
+          className="mt-6"
+        >
           <button
             onClick={() => navigate('/game')}
-            className="w-full bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-2"
+            className="w-full bg-gradient-to-r from-emerald-600 via-cyan-600 to-emerald-600 hover:from-emerald-500 hover:via-cyan-500 hover:to-emerald-500 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-cyan-500/50 flex items-center justify-center space-x-3 group relative overflow-hidden glow-effect"
           >
-            <Brain className="w-5 h-5" />
-            <span>{t('biofeedbackMode') || 'Biofeedback Mode'}</span>
+            <Brain className="w-5 h-5 group-hover:scale-110 transition-transform" />
+            <span className="text-lg">{t('biofeedbackMode') || 'Biofeedback Mode'}</span>
           </button>
-        </div>
+        </motion.div>
       </motion.div>
 
       {/* Features */}
@@ -159,66 +186,92 @@ const HomePage = () => {
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.6 }}
-        className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto"
+        className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto w-full"
       >
-        <div className="text-center">
-          <div className="bg-dark-800/50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-            <Heart className="w-8 h-8 text-primary-400" />
+        <motion.div
+          whileHover={{ y: -6, scale: 1.02 }}
+          className="text-center bg-gray-900/50 backdrop-blur-md glow-border rounded-2xl p-8 hover:bg-gray-900/70 transition-all duration-300 relative overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 to-purple-500/10 opacity-0 hover:opacity-100 transition-opacity"></div>
+          <div className="bg-gradient-to-br from-pink-500/30 to-purple-500/30 rounded-2xl w-24 h-24 flex items-center justify-center mx-auto mb-6 relative z-10 shadow-lg shadow-pink-500/20">
+            <Heart className="w-12 h-12 text-pink-300 drop-shadow-[0_0_15px_rgba(236,72,153,0.8)]" />
           </div>
-          <h3 className="text-lg font-semibold text-white mb-2">{t('tensionBuilding')}</h3>
-          <p className="text-dark-300">{t('tensionBuildingDesc')}</p>
-        </div>
+          <h3 className="text-xl font-bold text-white mb-3 relative z-10">{t('tensionBuilding')}</h3>
+          <p className="text-gray-300 text-sm leading-relaxed relative z-10">{t('tensionBuildingDesc')}</p>
+        </motion.div>
 
-        <div className="text-center">
-          <div className="bg-dark-800/50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-            <Shield className="w-8 h-8 text-accent-400" />
+        <motion.div
+          whileHover={{ y: -6, scale: 1.02 }}
+          className="text-center bg-gray-900/50 backdrop-blur-md glow-border rounded-2xl p-8 hover:bg-gray-900/70 transition-all duration-300 relative overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 to-emerald-500/10 opacity-0 hover:opacity-100 transition-opacity"></div>
+          <div className="bg-gradient-to-br from-green-500/30 to-emerald-500/30 rounded-2xl w-24 h-24 flex items-center justify-center mx-auto mb-6 relative z-10 shadow-lg shadow-green-500/20">
+            <Shield className="w-12 h-12 text-green-300 drop-shadow-[0_0_15px_rgba(34,197,94,0.8)]" />
           </div>
-          <h3 className="text-lg font-semibold text-white mb-2">{t('safety')}</h3>
-          <p className="text-dark-300">{t('safetyDesc')}</p>
-        </div>
+          <h3 className="text-xl font-bold text-white mb-3 relative z-10">{t('safety')}</h3>
+          <p className="text-gray-300 text-sm leading-relaxed relative z-10">{t('safetyDesc')}</p>
+        </motion.div>
 
-        <div className="text-center">
-          <div className="bg-dark-800/50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-            <Users className="w-8 h-8 text-secondary-400" />
+        <motion.div
+          whileHover={{ y: -6, scale: 1.02 }}
+          className="text-center bg-gray-900/50 backdrop-blur-md glow-border rounded-2xl p-8 hover:bg-gray-900/70 transition-all duration-300 relative overflow-hidden"
+        >
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-cyan-500/10 opacity-0 hover:opacity-100 transition-opacity"></div>
+          <div className="bg-gradient-to-br from-blue-500/30 to-cyan-500/30 rounded-2xl w-24 h-24 flex items-center justify-center mx-auto mb-6 relative z-10 shadow-lg shadow-blue-500/20">
+            <Users className="w-12 h-12 text-blue-300 drop-shadow-[0_0_15px_rgba(59,130,246,0.8)]" />
           </div>
-          <h3 className="text-lg font-semibold text-white mb-2">{t('groupPlay')}</h3>
-          <p className="text-dark-300">{t('groupPlayDesc')}</p>
-        </div>
+          <h3 className="text-xl font-bold text-white mb-3 relative z-10">{t('groupPlay')}</h3>
+          <p className="text-gray-300 text-sm leading-relaxed relative z-10">{t('groupPlayDesc')}</p>
+        </motion.div>
       </motion.div>
 
       {/* Join Modal */}
       {showJoinModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div 
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+          onClick={() => setShowJoinModal(false)}
+        >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-dark-800 glass-effect rounded-lg p-6 w-full max-w-md"
+            exit={{ scale: 0.9, opacity: 0 }}
+            onClick={(e) => e.stopPropagation()}
+            className="bg-gray-800/95 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-8 w-full max-w-md shadow-2xl"
           >
-            <h2 className="text-2xl font-serif text-white mb-4">{t('joinSession')}</h2>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-white">{t('joinSession')}</h2>
+              <button
+                onClick={() => setShowJoinModal(false)}
+                className="text-gray-400 hover:text-white transition-colors p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
             
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
-                <label className="block text-dark-200 mb-2">{t('sessionCode')}</label>
+                <label className="block text-gray-300 mb-2 font-medium">{t('sessionCode')}</label>
                 <input
                   type="text"
                   value={sessionCode}
                   onChange={(e) => setSessionCode(e.target.value.toUpperCase())}
                   placeholder={t('sessionCodePlaceholder')}
-                  className="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-3 text-white placeholder-dark-400 focus:outline-none focus:border-primary-500"
+                  className="w-full bg-gray-900/50 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all"
                   maxLength={6}
+                  autoFocus
                 />
               </div>
               
               <div className="flex space-x-3">
                 <button
                   onClick={handleJoinGame}
-                  className="flex-1 bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
                 >
                   {t('join')}
                 </button>
                 <button
                   onClick={() => setShowJoinModal(false)}
-                  className="flex-1 bg-dark-600 hover:bg-dark-500 text-white font-semibold py-3 px-4 rounded-lg transition-colors"
+                  className="flex-1 bg-gray-700/50 hover:bg-gray-700/70 border border-gray-600/50 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300"
                 >
                   {t('cancel')}
                 </button>
