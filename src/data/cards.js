@@ -1469,6 +1469,408 @@ export const cardDeck = [
     description: "Zgadnij, czy mam większy apetyt seksualny niż Ty?",
     target: "one",
     intensity: 5
+  },
+
+  // NEW LEVEL 5 CARDS FOR 2 PLAYERS ONLINE (Intensity 5, Target: two)
+  {
+    id: "card_181",
+    type: "Truth",
+    title: "Najbardziej perwersyjna fantazja",
+    description: "Opowiedz partnerowi o swojej najbardziej perwersyjnej fantazji seksualnej.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_182",
+    type: "Dare",
+    title: "Intymny taniec",
+    description: "Wykonaj dla partnera intymny taniec erotyczny przez 2 minuty.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_183",
+    type: "Truth",
+    title: "Zakazane miejsca",
+    description: "Gdzie jest najbardziej zakazane miejsce, gdzie chciałbyś/chciałabyś uprawiać seks?",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_184",
+    type: "Dare",
+    title: "Erotyczny szept",
+    description: "Szeptaj partnerowi brudne rzeczy do ucha przez 1 minutę.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_185",
+    type: "Truth",
+    title: "Najbardziej podniecające słowo",
+    description: "Jakie słowo podnieca Cię najbardziej? Powiedz je partnerowi.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_186",
+    type: "Dare",
+    title: "Dotyk przez ubranie",
+    description: "Delikatnie dotykaj partnera w najbardziej wrażliwe miejsca przez ubranie.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_187",
+    type: "Truth",
+    title: "Fantazja o dominacji",
+    description: "Czy fantazjujesz o dominowaniu lub byciu dominowanym? Opowiedz szczegółowo.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_188",
+    type: "Dare",
+    title: "Erotyczne zdjęcie",
+    description: "Pokaż partnerowi najbardziej erotyczne zdjęcie z telefonu.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_189",
+    type: "Truth",
+    title: "Najbardziej intymne miejsce",
+    description: "Gdzie na swoim ciele chciałbyś/chciałabyś być dotykany/a najbardziej?",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_190",
+    type: "Dare",
+    title: "Pocałunek w szyję",
+    description: "Pocałuj partnera w szyję i delikatnie liż przez 30 sekund.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_191",
+    type: "Truth",
+    title: "Najbardziej podniecająca część ciała",
+    description: "Jaka część ciała partnera podnieca Cię najbardziej?",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_192",
+    type: "Dare",
+    title: "Erotyczny masaż",
+    description: "Wykonaj partnerowi erotyczny masaż przez 3 minuty.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_193",
+    type: "Truth",
+    title: "Najbardziej zakazana fantazja",
+    description: "Opowiedz o swojej najbardziej zakazanej fantazji, której nigdy nie realizowałeś/aś.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_194",
+    type: "Dare",
+    title: "Striptiz dla partnera",
+    description: "Wykonaj striptiz dla partnera, zdejmując ubrania powoli i erotycznie.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_195",
+    type: "Truth",
+    title: "Najbardziej podniecająca pozycja",
+    description: "Jaka pozycja seksualna podnieca Cię najbardziej? Opisz szczegółowo.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_196",
+    type: "Dare",
+    title: "Erotyczne selfie",
+    description: "Zrób erotyczne selfie i wyślij je partnerowi.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_197",
+    type: "Truth",
+    title: "Najbardziej intymne pragnienie",
+    description: "Jakie jest Twoje najbardziej intymne pragnienie dotyczące partnera?",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_198",
+    type: "Dare",
+    title: "Pocałunek namiętny",
+    description: "Pocałuj partnera namiętnie przez 2 minuty bez przerwy.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_199",
+    type: "Truth",
+    title: "Najbardziej podniecająca część garderoby",
+    description: "Jaka część garderoby partnera podnieca Cię najbardziej?",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_200",
+    type: "Dare",
+    title: "Erotyczne opowiadanie",
+    description: "Opowiedz partnerowi erotyczne opowiadanie przez 2 minuty.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_201",
+    type: "Truth",
+    title: "Najbardziej intymne miejsce na ciele",
+    description: "Gdzie na ciele partnera chciałbyś/chciałabyś być dotykany/a najbardziej?",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_202",
+    type: "Dare",
+    title: "Erotyczny taniec",
+    description: "Wykonaj dla partnera erotyczny taniec, poruszając się powoli i zmysłowo.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_203",
+    type: "Truth",
+    title: "Najbardziej podniecająca fantazja",
+    description: "Opowiedz partnerowi o swojej najbardziej podniecającej fantazji seksualnej.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_204",
+    type: "Dare",
+    title: "Dotyk intymny",
+    description: "Delikatnie dotykaj partnera w najbardziej wrażliwe miejsca przez 2 minuty.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_205",
+    type: "Truth",
+    title: "Najbardziej zakazane słowo",
+    description: "Jakie zakazane słowo chciałbyś/chciałabyś usłyszeć od partnera?",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_206",
+    type: "Dare",
+    title: "Erotyczny szept",
+    description: "Szeptaj partnerowi najbardziej podniecające rzeczy do ucha przez 1 minutę.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_207",
+    type: "Truth",
+    title: "Najbardziej intymne pragnienie",
+    description: "Jakie jest Twoje najbardziej intymne pragnienie dotyczące intymności z partnerem?",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_208",
+    type: "Dare",
+    title: "Pocałunek w usta",
+    description: "Pocałuj partnera namiętnie w usta przez 3 minuty.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_209",
+    type: "Truth",
+    title: "Najbardziej podniecająca część ciała",
+    description: "Jaka część ciała partnera podnieca Cię najbardziej? Opisz szczegółowo.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_210",
+    type: "Dare",
+    title: "Erotyczny masaż",
+    description: "Wykonaj partnerowi erotyczny masaż całego ciała przez 5 minut.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_211",
+    type: "Truth",
+    title: "Najbardziej zakazana fantazja",
+    description: "Opowiedz o swojej najbardziej zakazanej fantazji, której nigdy nie realizowałeś/aś z partnerem.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_212",
+    type: "Dare",
+    title: "Striptiz powolny",
+    description: "Wykonaj dla partnera powolny striptiz, zdejmując ubrania jeden po drugim.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_213",
+    type: "Truth",
+    title: "Najbardziej podniecająca pozycja",
+    description: "Jaka pozycja seksualna podnieca Cię najbardziej? Opisz szczegółowo partnerowi.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_214",
+    type: "Dare",
+    title: "Erotyczne zdjęcie",
+    description: "Pokaż partnerowi najbardziej erotyczne zdjęcie z telefonu i opowiedz o nim.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_215",
+    type: "Truth",
+    title: "Najbardziej intymne miejsce",
+    description: "Gdzie na swoim ciele chciałbyś/chciałabyś być dotykany/a najbardziej przez partnera?",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_216",
+    type: "Dare",
+    title: "Pocałunek w szyję",
+    description: "Pocałuj partnera w szyję i delikatnie liż przez 1 minutę.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_217",
+    type: "Truth",
+    title: "Najbardziej podniecająca część garderoby",
+    description: "Jaka część garderoby partnera podnieca Cię najbardziej?",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_218",
+    type: "Dare",
+    title: "Erotyczne opowiadanie",
+    description: "Opowiedz partnerowi erotyczne opowiadanie o was obojgu przez 3 minuty.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_219",
+    type: "Truth",
+    title: "Najbardziej intymne pragnienie",
+    description: "Jakie jest Twoje najbardziej intymne pragnienie dotyczące partnera?",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_220",
+    type: "Dare",
+    title: "Erotyczny taniec",
+    description: "Wykonaj dla partnera erotyczny taniec, poruszając się powoli i zmysłowo przez 2 minuty.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_221",
+    type: "Truth",
+    title: "Najbardziej podniecająca fantazja",
+    description: "Opowiedz partnerowi o swojej najbardziej podniecającej fantazji seksualnej z nim/nią.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_222",
+    type: "Dare",
+    title: "Dotyk intymny",
+    description: "Delikatnie dotykaj partnera w najbardziej wrażliwe miejsca przez 3 minuty.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_223",
+    type: "Truth",
+    title: "Najbardziej zakazane słowo",
+    description: "Jakie zakazane słowo chciałbyś/chciałabyś usłyszeć od partnera podczas intymności?",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_224",
+    type: "Dare",
+    title: "Erotyczny szept",
+    description: "Szeptaj partnerowi najbardziej podniecające i zakazane rzeczy do ucha przez 2 minuty.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_225",
+    type: "Truth",
+    title: "Najbardziej intymne pragnienie",
+    description: "Jakie jest Twoje najbardziej intymne i zakazane pragnienie dotyczące partnera?",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_226",
+    type: "Dare",
+    title: "Pocałunek namiętny",
+    description: "Pocałuj partnera namiętnie w usta przez 4 minuty bez przerwy.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_227",
+    type: "Truth",
+    title: "Najbardziej podniecająca część ciała",
+    description: "Jaka część ciała partnera podnieca Cię najbardziej? Opisz szczegółowo co chciałbyś/chciałabyś z nią zrobić.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_228",
+    type: "Dare",
+    title: "Erotyczny masaż",
+    description: "Wykonaj partnerowi erotyczny masaż całego ciała przez 7 minut, skupiając się na najbardziej wrażliwych miejscach.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_229",
+    type: "Truth",
+    title: "Najbardziej zakazana fantazja",
+    description: "Opowiedz partnerowi o swojej najbardziej zakazanej i perwersyjnej fantazji, której nigdy nie realizowałeś/aś.",
+    target: "two",
+    intensity: 5
+  },
+  {
+    id: "card_230",
+    type: "Dare",
+    title: "Striptiz erotyczny",
+    description: "Wykonaj dla partnera pełny erotyczny striptiz, zdejmując ubrania powoli i zmysłowo, tańcząc przez 5 minut.",
+    target: "two",
+    intensity: 5
   }
 ]
 
