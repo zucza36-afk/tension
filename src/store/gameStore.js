@@ -235,11 +235,23 @@ const useGameStore = create((set, get) => ({
 
   // Session management
   createSession: async () => {
+    console.log('[createSession] Starting session creation...')
     const sessionCode = Math.random().toString(36).substring(2, 8).toUpperCase()
     const sessionId = Date.now().toString()
     const localPlayerId = `player_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`
     
+    console.log('[createSession] Generated sessionCode:', sessionCode, 'sessionId:', sessionId)
+    
+    // Always set local session first (guaranteed to work)
+    set({ 
+      sessionId, 
+      sessionCode, 
+      isOnlineSession: false,
+      localPlayerId: null
+    })
+    
     try {
+      console.log('[createSession] Attempting Firebase session creation...')
       // Try to create session in Firebase
       await sessionService.createSession({
         sessionId,
@@ -251,17 +263,25 @@ const useGameStore = create((set, get) => ({
         consensualFilter: true,
         intensityEscalation: true
       })
+      console.log('[createSession] Firebase session created successfully')
       
-      // Initialize game state in Firebase
-      await sessionService.updateGameState(sessionId, {
-        gameStatus: 'setup',
-        currentRound: 0,
-        totalRounds: 10,
-        currentPlayerIndex: 0,
-        currentCard: null,
-        players: []
-      })
+      // Try to initialize game state in Firebase (non-critical)
+      try {
+        await sessionService.updateGameState(sessionId, {
+          gameStatus: 'setup',
+          currentRound: 0,
+          totalRounds: 10,
+          currentPlayerIndex: 0,
+          currentCard: null,
+          players: []
+        })
+        console.log('[createSession] Firebase game state initialized')
+      } catch (stateError) {
+        console.warn('[createSession] Failed to initialize game state, continuing anyway:', stateError.message)
+        // Don't fail the whole session creation if state init fails
+      }
       
+      // Update to online session
       set({ 
         sessionId, 
         sessionCode, 
@@ -270,18 +290,19 @@ const useGameStore = create((set, get) => ({
       })
       
       // Subscribe to game state changes
-      get().subscribeToOnlineGame()
+      try {
+        get().subscribeToOnlineGame()
+        console.log('[createSession] Subscribed to online game state')
+      } catch (subError) {
+        console.warn('[createSession] Failed to subscribe, continuing anyway:', subError.message)
+      }
       
+      console.log('[createSession] Returning session:', { sessionId, sessionCode })
       return { sessionId, sessionCode }
     } catch (error) {
-      console.warn('Firebase session creation failed, using local session:', error.message)
-      // Fallback to local session - always works
-      set({ 
-        sessionId, 
-        sessionCode, 
-        isOnlineSession: false,
-        localPlayerId: null
-      })
+      console.warn('[createSession] Firebase session creation failed, using local session:', error.message, error)
+      // Already set to local session above, just return
+      console.log('[createSession] Returning local session:', { sessionId, sessionCode })
       return { sessionId, sessionCode }
     }
   },

@@ -17,24 +17,24 @@ const HomePage = () => {
   const t = (key) => getTranslation(key, language)
 
   const handleCreateGame = async () => {
-    console.log('Creating game...')
+    console.log('[HomePage] handleCreateGame called')
     try {
+      console.log('[HomePage] Calling createSession...')
       const result = await createSession()
-      console.log('Session created:', result)
+      console.log('[HomePage] createSession returned:', result)
       
       if (result && result.sessionCode) {
+        console.log('[HomePage] Session created successfully, navigating to /setup')
         toast.success(`${t('gameCreated') || 'Gra utworzona'} ${result.sessionCode}`)
-        // Small delay to ensure state is updated
-        setTimeout(() => {
-          navigate('/setup')
-        }, 100)
+        // Navigate immediately - state is already set
+        navigate('/setup')
       } else {
-        console.error('No sessionCode returned:', result)
-        toast.error(t('errorCreatingGame') || 'Błąd tworzenia gry')
+        console.error('[HomePage] No sessionCode returned:', result)
+        toast.error(t('errorCreatingGame') || 'Błąd tworzenia gry - brak kodu sesji')
       }
     } catch (error) {
-      console.error('Error creating game:', error)
-      toast.error(t('errorCreatingGame') || 'Błąd tworzenia gry: ' + error.message)
+      console.error('[HomePage] Error in handleCreateGame:', error)
+      toast.error(t('errorCreatingGame') || 'Błąd tworzenia gry: ' + (error.message || 'Nieznany błąd'))
     }
   }
 
@@ -95,7 +95,12 @@ const HomePage = () => {
         className="w-full max-w-md space-y-4"
       >
         <button
-          onClick={handleCreateGame}
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            console.log('[HomePage] Button clicked')
+            handleCreateGame()
+          }}
           type="button"
           className="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-200 transform hover:scale-105 flex items-center justify-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed"
         >
