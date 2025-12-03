@@ -37,8 +37,10 @@ Elegancka aplikacja webowa do gry towarzyskiej dla par i grup, która buduje nap
 
 1. **Sklonuj repozytorium**
 ```bash
-git clone <repository-url>
-cd napiecie-game
+git clone https://github.com/zucza36-afk/tension.git
+cd tension
+# lub jeśli folder nazywa się inaczej:
+# cd napiecie-game
 ```
 
 2. **Zainstaluj zależności**

@@ -15,11 +15,13 @@
 2. Zaloguj się do swojego konta
 3. Kliknij **"+"** w prawym górnym rogu → **"New repository"**
 4. Wypełnij:
-   - **Repository name:** `napiecie-game` (lub inna nazwa)
+   - **Repository name:** `tension` (lub inna nazwa)
    - **Description:** "A party game application with Firebase multiplayer support"
    - **Visibility:** Public lub Private (według preferencji)
    - **NIE zaznaczaj** "Initialize this repository with a README" (już mamy pliki)
 5. Kliknij **"Create repository"**
+
+**UWAGA:** Jeśli repozytorium już istnieje (np. `zucza36-afk/tension`), pomiń ten krok i przejdź do kroku 2.
 
 ### 2. Połącz lokalne repozytorium z GitHub
 
@@ -29,7 +31,8 @@ Po utworzeniu repozytorium GitHub pokaże instrukcje. Uruchom w terminalu:
 cd /home/cezary/Pobrane/napiecie-game
 
 # Dodaj remote (zamień YOUR_USERNAME na swoją nazwę użytkownika GitHub)
-git remote add origin https://github.com/YOUR_USERNAME/napiecie-game.git
+# Jeśli repozytorium nazywa się "tension":
+git remote add origin https://github.com/YOUR_USERNAME/tension.git
 
 # Wypchnij kod
 git push -u origin main
@@ -38,7 +41,17 @@ git push -u origin main
 **Lub jeśli używasz SSH:**
 
 ```bash
-git remote add origin git@github.com:YOUR_USERNAME/napiecie-game.git
+git remote add origin git@github.com:YOUR_USERNAME/tension.git
+git push -u origin main
+```
+
+**Jeśli repozytorium już istnieje i jest połączone:**
+```bash
+# Sprawdź obecny remote
+git remote -v
+
+# Jeśli trzeba zmienić URL:
+git remote set-url origin https://github.com/YOUR_USERNAME/tension.git
 git push -u origin main
 ```
 
@@ -48,7 +61,7 @@ Jeśli masz zainstalowany GitHub CLI:
 
 ```bash
 cd /home/cezary/Pobrane/napiecie-game
-gh repo create napiecie-game --public --source=. --remote=origin --push
+gh repo create tension --public --source=. --remote=origin --push
 ```
 
 ## Konfiguracja użytkownika Git (opcjonalnie)

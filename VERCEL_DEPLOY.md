@@ -11,7 +11,8 @@ git add .
 git commit -m "Initial commit"
 
 # Utwórz repozytorium na GitHub/GitLab/Bitbucket i dodaj remote
-git remote add origin https://github.com/twoja-nazwa/napiecie-game.git
+# UWAGA: Zamień "tension" na nazwę Twojego repozytorium, jeśli jest inna
+git remote add origin https://github.com/twoja-nazwa/tension.git
 git push -u origin main
 ```
 
