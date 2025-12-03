@@ -26,7 +26,8 @@ const CouplesModePage = () => {
     initializeGame, 
     startGame, 
     updateSettings,
-    customCards 
+    customCards,
+    createSession
   } = useGameStore();
   
   const [gameSettings, setGameSettings] = useState({
@@ -127,7 +128,7 @@ const CouplesModePage = () => {
     }));
   };
 
-  const handleStartGame = () => {
+  const handleStartGame = async () => {
     // Validate settings
     const selectedCategories = Object.values(gameSettings.categories).filter(Boolean);
     if (selectedCategories.length === 0) {
@@ -140,15 +141,35 @@ const CouplesModePage = () => {
       return;
     }
 
-    // Initialize game with couple mode settings
-    initializeGame();
-    updateSettings({
-      gameMode: 'couples',
-      ...gameSettings
-    });
+    try {
+      // 1. Utwórz sesję (pokój)
+      const { sessionId, sessionCode: newSessionCode } = await createSession();
+      
+      // 2. Zainicjalizuj grę
+      await initializeGame();
+      
+      // 3. Zapisz ustawienia Couples Mode
+      updateSettings({
+        gameMode: 'couples',
+        maxIntensity: gameSettings.maxIntensity,
+        totalRounds: gameSettings.totalRounds,
+        intensityEscalation: gameSettings.intensityEscalation,
+        consensualFilter: true,
+        ...gameSettings
+      });
 
-    // Navigate to game
-    navigate('/game');
+      // 4. Przekieruj do pokoju oczekiwania
+      navigate('/couples-lobby', { 
+        state: { 
+          sessionCode: newSessionCode,
+          isHost: true,
+          gameSettings: gameSettings
+        } 
+      });
+    } catch (error) {
+      console.error('Error starting couples game:', error);
+      alert(t('errorStartingGame') || 'Error starting game. Please try again.');
+    }
   };
 
   const getSelectedCategoriesCount = () => {
@@ -163,9 +184,9 @@ const CouplesModePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen gradient-bg text-white">
       {/* Header */}
-      <div className="bg-gray-800 border-b border-gray-700 p-4">
+      <div className="bg-gray-800/60 backdrop-blur-md border-b border-gray-700/50 p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <button
@@ -197,7 +218,7 @@ const CouplesModePage = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gray-800 rounded-xl p-6 border border-gray-700"
+            className="bg-gray-900/60 backdrop-blur-md rounded-xl p-6 border border-gray-700/50"
           >
             <div className="flex items-center space-x-2 mb-4">
               <Target size={20} className="text-blue-400" />
@@ -256,7 +277,7 @@ const CouplesModePage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-gray-800 rounded-xl p-6 border border-gray-700"
+            className="bg-gray-900/60 backdrop-blur-md rounded-xl p-6 border border-gray-700/50"
           >
             <div className="flex items-center space-x-2 mb-4">
               <Clock size={20} className="text-green-400" />
@@ -361,7 +382,7 @@ const CouplesModePage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-gray-800 rounded-xl p-6 border border-gray-700"
+            className="bg-gray-900/60 backdrop-blur-md rounded-xl p-6 border border-gray-700/50"
           >
             <div className="flex items-center space-x-2 mb-4">
               <Star size={20} className="text-yellow-400" />
@@ -432,7 +453,7 @@ const CouplesModePage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-gray-800 rounded-xl p-6 border border-gray-700"
+            className="bg-gray-900/60 backdrop-blur-md rounded-xl p-6 border border-gray-700/50"
           >
             <div className="flex items-center space-x-2 mb-4">
               <Settings size={20} className="text-purple-400" />
@@ -516,10 +537,10 @@ const CouplesModePage = () => {
             <button
               onClick={handleStartGame}
               disabled={getSelectedCategoriesCount() === 0}
-              className={`flex items-center space-x-3 px-6 py-4 rounded-xl text-lg font-semibold transition-all ${
+              className={`flex items-center justify-center space-x-3 px-6 py-4 rounded-xl text-lg font-semibold transition-all duration-300 ${
                 getSelectedCategoriesCount() === 0
-                  ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white shadow-lg hover:shadow-xl'
+                  ? 'bg-gray-700/50 text-gray-400 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-pink-600 to-red-600 hover:from-pink-700 hover:to-red-700 text-white shadow-lg hover:shadow-xl glow-effect'
               }`}
             >
               <Heart size={24} />
@@ -529,7 +550,7 @@ const CouplesModePage = () => {
 
             <button
               onClick={() => navigate('/intimate-guessing')}
-              className="flex items-center space-x-3 px-6 py-4 rounded-xl text-lg font-semibold transition-all bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white shadow-lg hover:shadow-xl"
+              className="flex items-center justify-center space-x-3 px-6 py-4 rounded-xl text-lg font-semibold transition-all duration-300 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl"
             >
               <Target size={24} />
               <span>{t('intimateGuessingGame') || 'Intimate Guessing Game'}</span>

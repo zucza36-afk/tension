@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 import { cardDeck, getCardsByIntensity, shuffleDeck } from '../data/cards'
 import * as sessionService from '../firebase/sessionService'
+import { ref, set } from 'firebase/database'
+import { realtimeDb } from '../firebase/config'
 
 const useGameStore = create((set, get) => ({
   // Game state
@@ -44,6 +46,12 @@ const useGameStore = create((set, get) => ({
   
   // Chat
   chatMessages: [],
+  
+  // AI Bot
+  aiBotEnabled: false,
+  aiBotMessages: [], // { id, type: 'comment'|'hint'|'system', message, timestamp, playerId? }
+  pendingHintRequest: null, // { playerId, playerName, question, hint }
+  hintPenalty: 2, // Punkty odejmowane za podpowiedź
   
   // Initialize game
   initializeGame: async () => {
@@ -569,6 +577,12 @@ const useGameStore = create((set, get) => ({
     })
     newUnsubs.push(unsubChat)
     
+    // Subscribe to hint requests
+    const unsubHintRequest = sessionService.subscribeToHintRequest(sessionId, (hintRequest) => {
+      set({ pendingHintRequest: hintRequest || null })
+    })
+    newUnsubs.push(unsubHintRequest)
+    
     set({ unsubscribeFunctions: newUnsubs })
   },
 
@@ -859,6 +873,96 @@ const useGameStore = create((set, get) => ({
   
   clearChatMessages: () => {
     set({ chatMessages: [] })
+  },
+  
+  // AI Bot functions
+  setAIBotEnabled: (enabled) => {
+    set({ aiBotEnabled: enabled })
+    if (!enabled) {
+      set({ aiBotMessages: [], pendingHintRequest: null })
+    }
+  },
+  
+  requestHint: async (hintData) => {
+    const { sessionId, isOnlineSession } = get()
+    
+    const hintRequest = {
+      id: `hint_${Date.now()}`,
+      ...hintData,
+      timestamp: Date.now()
+    }
+    
+    set({ pendingHintRequest: hintRequest })
+    
+    // Sync to Firebase if online
+    if (isOnlineSession && sessionId) {
+      try {
+        const gameStateRef = ref(realtimeDb, `games/${sessionId}/pendingHintRequest`)
+        await set(gameStateRef, hintRequest)
+      } catch (error) {
+        console.error('Error syncing hint request:', error)
+      }
+    }
+  },
+  
+  acceptHint: async () => {
+    const { pendingHintRequest, players, playerScores, sessionId, isOnlineSession } = get()
+    
+    if (!pendingHintRequest) return
+    
+    // Odejmij punkty graczowi, który poprosił o podpowiedź
+    const requestingPlayer = players.find(p => p.id === pendingHintRequest.playerId)
+    if (requestingPlayer) {
+      const newScores = { ...playerScores }
+      const currentScore = newScores[pendingHintRequest.playerId] || 0
+      newScores[pendingHintRequest.playerId] = Math.max(0, currentScore - get().hintPenalty)
+      
+      set({ 
+        playerScores: newScores,
+        pendingHintRequest: null
+      })
+      
+      // Dodaj wiadomość AI
+      get().addAIBotMessage({
+        type: 'hint',
+        message: `Podpowiedź: ${pendingHintRequest.hint}`,
+        playerName: requestingPlayer.nickname,
+        timestamp: Date.now()
+      })
+    }
+    
+    // Sync to Firebase
+    if (isOnlineSession && sessionId) {
+      await get().syncGameStateToFirebase()
+    }
+  },
+  
+  declineHint: async () => {
+    set({ pendingHintRequest: null })
+    
+    const { sessionId, isOnlineSession } = get()
+    if (isOnlineSession && sessionId) {
+      try {
+        const gameStateRef = ref(realtimeDb, `games/${sessionId}/pendingHintRequest`)
+        await set(gameStateRef, null)
+      } catch (error) {
+        console.error('Error syncing hint decline:', error)
+      }
+    }
+  },
+  
+  addAIBotMessage: (message) => {
+    const { aiBotMessages } = get()
+    set({
+      aiBotMessages: [...aiBotMessages, {
+        id: `ai_msg_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`,
+        ...message
+      }]
+    })
+  },
+  
+  clearAIBotMessages: () => {
+    set({ aiBotMessages: [] })
   }
 }))
 

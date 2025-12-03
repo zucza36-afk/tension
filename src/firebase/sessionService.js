@@ -233,6 +233,26 @@ export const sendChatMessage = async (sessionId, message) => {
   }
 }
 
+// Hint request functionality
+export const subscribeToHintRequest = (sessionId, callback) => {
+  if (!isFirebaseConfigured() || !realtimeDb) {
+    console.warn('Firebase nie jest skonfigurowane - subskrypcja hint request nie działa')
+    return () => {}
+  }
+  
+  const hintRequestRef = ref(realtimeDb, `games/${sessionId}/pendingHintRequest`)
+  
+  const unsubscribe = onValue(hintRequestRef, (snapshot) => {
+    const data = snapshot.val()
+    callback(data)
+  })
+  
+  return () => {
+    off(hintRequestRef)
+    unsubscribe()
+  }
+}
+
 // Analytics
 export const saveGameAnalytics = async (sessionId, analytics) => {
   try {

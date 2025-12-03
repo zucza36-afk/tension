@@ -22,6 +22,8 @@ import Chat from '../components/Chat'
 import AnswerModal from '../components/AnswerModal'
 import GuessModal from '../components/GuessModal'
 import ResultModal from '../components/ResultModal'
+import AIBot from '../components/AIBot'
+import HintRequestModal from '../components/HintRequestModal'
 import toast from 'react-hot-toast'
 
 const GamePage = () => {
@@ -510,6 +512,12 @@ const GamePage = () => {
           onContinue={handleContinueAfterResult}
         />
       )}
+      
+      {/* AI Bot */}
+      <AIBot />
+      
+      {/* Hint Request Modal */}
+      <HintRequestModal />
     </div>
   )
 }

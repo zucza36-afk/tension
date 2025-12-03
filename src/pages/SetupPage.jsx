@@ -27,7 +27,9 @@ const SetupPage = () => {
     setMaxIntensity,
     setConsensualFilter,
     setIntensityEscalation,
-    startGame
+    startGame,
+    aiBotEnabled,
+    setAIBotEnabled
   } = useGameStore()
 
   const [newPlayer, setNewPlayer] = useState({ nickname: '', comfortLevel: 3 })
@@ -318,6 +320,17 @@ const SetupPage = () => {
                       className="text-primary-600 focus:ring-primary-500"
                     />
                     <span className="text-white">Eskalacja intensywności</span>
+                  </label>
+                  
+                  <label className="flex items-center space-x-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={aiBotEnabled}
+                      onChange={(e) => setAIBotEnabled(e.target.checked)}
+                      className="text-primary-600 focus:ring-primary-500"
+                    />
+                    <span className="text-white">AI Bot Prowadzący</span>
+                    <span className="text-xs text-gray-400">(Komentuje grę i pomaga)</span>
                   </label>
                 </div>
               </div>
