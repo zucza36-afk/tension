@@ -943,12 +943,7 @@ const useGameStore = create((set, get) => ({
       card.id === updatedCard.id ? newVersion : card
     )
     set({ customCards: updatedCards })
-    const { customCards } = get()
-    const newCards = customCards.map(card =>
-      card.id === updatedCard.id ? updatedCard : card
-    )
-    set({ customCards: newCards })
-    localStorage.setItem('napiecie_customCards', JSON.stringify(newCards))
+    localStorage.setItem('napiecie_customCards', JSON.stringify(updatedCards))
   },
 
   rateCard: (cardId, rating, playerId) => {
