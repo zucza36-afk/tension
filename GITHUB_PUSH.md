@@ -1,11 +1,19 @@
 # Wypchnięcie kodu do GitHub
 
+## ⚠️ Ważna informacja
+
+**Nazwa projektu lokalnego:** `napiecie-game` (katalog i package.json)  
+**Nazwa repozytorium GitHub:** `tension` (zucza36-afk/tension)
+
+To jest poprawne - nazwa lokalnego projektu może różnić się od nazwy repozytorium GitHub.
+
 ## Status
 
 ✅ Repozytorium Git zostało zainicjalizowane
 ✅ Pliki zostały dodane
 ✅ Pierwszy commit został utworzony
 ✅ Gałąź została zmieniona na `main`
+✅ Repozytorium połączone z: https://github.com/zucza36-afk/tension
 
 ## Następne kroki
 
